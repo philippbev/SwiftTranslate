@@ -1,0 +1,464 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3250844D2F6B1764005B85F9 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3250844C2F6B1764005B85F9 /* Strings.swift */; };
+		325084512F6B1769005B85F9 /* Color+SaarlandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325084502F6B1769005B85F9 /* Color+SaarlandTheme.swift */; };
+		325084552F6B17EF005B85F9 /* ReleaseConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325084542F6B17EF005B85F9 /* ReleaseConfig.swift */; };
+		325084572F6B1809005B85F9 /* ReleaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325084562F6B1809005B85F9 /* ReleaseTests.swift */; };
+		325084592F6B180D005B85F9 /* AppStoreReviewRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 325084582F6B180D005B85F9 /* AppStoreReviewRequest.swift */; };
+		3250845D2F6B184B005B85F9 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3250845C2F6B184B005B85F9 /* AppConfig.swift */; };
+		B000100010000010 /* QuizViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A000100010000010 /* QuizViewModel.swift */; };
+		B000100010000011 /* QuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A000100010000011 /* QuizView.swift */; };
+		B000100010000012 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A000100010000012 /* OnboardingView.swift */; };
+		B001000100000001 /* SaarlandMassApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A001000100000001 /* SaarlandMassApp.swift */; };
+		B00100010000000A /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00100010000000A /* ColorExtension.swift */; };
+		B00100010000000B /* vergleichsobjekte.json in Resources */ = {isa = PBXBuildFile; fileRef = A00100010000000B /* vergleichsobjekte.json */; };
+		B00100010000000C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A00100010000000C /* Assets.xcassets */; };
+		B00100010000000D /* KIVergleichViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00100010000000D /* KIVergleichViewModel.swift */; };
+		B00100010000000E /* KIVergleichView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00100010000000E /* KIVergleichView.swift */; };
+		B00100010000000F /* ShareableCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00100010000000F /* ShareableCardView.swift */; };
+		B001000200000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A001000200000002 /* ContentView.swift */; };
+		B001000300000003 /* ComparisonObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A001000300000003 /* ComparisonObject.swift */; };
+		B001000400000004 /* UnitConverterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A001000400000004 /* UnitConverterService.swift */; };
+		B001000500000005 /* SaarlandViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A001000500000005 /* SaarlandViewModel.swift */; };
+		B001000600000006 /* CompareListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A001000600000006 /* CompareListView.swift */; };
+		B001000700000007 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A001000700000007 /* DetailView.swift */; };
+		B001000800000008 /* CalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A001000800000008 /* CalculatorView.swift */; };
+		B001000900000009 /* RandomFactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A001000900000009 /* RandomFactView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3250844C2F6B1764005B85F9 /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
+		325084502F6B1769005B85F9 /* Color+SaarlandTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+SaarlandTheme.swift"; sourceTree = "<group>"; };
+		325084542F6B17EF005B85F9 /* ReleaseConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReleaseConfig.swift; sourceTree = "<group>"; };
+		325084562F6B1809005B85F9 /* ReleaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReleaseTests.swift; sourceTree = "<group>"; };
+		325084582F6B180D005B85F9 /* AppStoreReviewRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreReviewRequest.swift; sourceTree = "<group>"; };
+		3250845C2F6B184B005B85F9 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		A000100010000010 /* QuizViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizViewModel.swift; sourceTree = "<group>"; };
+		A000100010000011 /* QuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizView.swift; sourceTree = "<group>"; };
+		A000100010000012 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		A001000100000001 /* SaarlandMassApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaarlandMassApp.swift; sourceTree = "<group>"; };
+		A00100010000000A /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
+		A00100010000000B /* vergleichsobjekte.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = vergleichsobjekte.json; sourceTree = "<group>"; };
+		A00100010000000C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A00100010000000D /* KIVergleichViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KIVergleichViewModel.swift; sourceTree = "<group>"; };
+		A00100010000000E /* KIVergleichView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KIVergleichView.swift; sourceTree = "<group>"; };
+		A00100010000000F /* ShareableCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareableCardView.swift; sourceTree = "<group>"; };
+		A001000200000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A001000300000003 /* ComparisonObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparisonObject.swift; sourceTree = "<group>"; };
+		A001000400000004 /* UnitConverterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitConverterService.swift; sourceTree = "<group>"; };
+		A001000500000005 /* SaarlandViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaarlandViewModel.swift; sourceTree = "<group>"; };
+		A001000600000006 /* CompareListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareListView.swift; sourceTree = "<group>"; };
+		A001000700000007 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
+		A001000800000008 /* CalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorView.swift; sourceTree = "<group>"; };
+		A001000900000009 /* RandomFactView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomFactView.swift; sourceTree = "<group>"; };
+		D001000100000001 /* SaarlandMassStab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SaarlandMassStab.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E001000100000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F001000000000000 = {
+			isa = PBXGroup;
+			children = (
+				F001000100000001 /* SaarlandMassStab */,
+				F001000200000002 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F001000100000001 /* SaarlandMassStab */ = {
+			isa = PBXGroup;
+			children = (
+				A001000100000001 /* SaarlandMassApp.swift */,
+				A001000200000002 /* ContentView.swift */,
+				F001000300000003 /* Models */,
+				F001000400000004 /* Services */,
+				F001000500000005 /* ViewModel */,
+				F001000600000006 /* Views */,
+				F001000700000007 /* Resources */,
+				A00100010000000C /* Assets.xcassets */,
+				3250844C2F6B1764005B85F9 /* Strings.swift */,
+				325084502F6B1769005B85F9 /* Color+SaarlandTheme.swift */,
+				325084542F6B17EF005B85F9 /* ReleaseConfig.swift */,
+				3250845C2F6B184B005B85F9 /* AppConfig.swift */,
+			);
+			path = SaarlandMassStab;
+			sourceTree = "<group>";
+		};
+		F001000200000002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D001000100000001 /* SaarlandMassStab.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F001000300000003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A001000300000003 /* ComparisonObject.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F001000400000004 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A001000400000004 /* UnitConverterService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F001000500000005 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				A001000500000005 /* SaarlandViewModel.swift */,
+				A00100010000000D /* KIVergleichViewModel.swift */,
+				A000100010000010 /* QuizViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		F001000600000006 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A00100010000000A /* ColorExtension.swift */,
+				A001000600000006 /* CompareListView.swift */,
+				A001000700000007 /* DetailView.swift */,
+				A001000800000008 /* CalculatorView.swift */,
+				A001000900000009 /* RandomFactView.swift */,
+				A00100010000000E /* KIVergleichView.swift */,
+				A00100010000000F /* ShareableCardView.swift */,
+				A000100010000011 /* QuizView.swift */,
+				A000100010000012 /* OnboardingView.swift */,
+				325084562F6B1809005B85F9 /* ReleaseTests.swift */,
+				325084582F6B180D005B85F9 /* AppStoreReviewRequest.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F001000700000007 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A00100010000000B /* vergleichsobjekte.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C001000100000001 /* SaarlandMassStab */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C001000200000002 /* Build configuration list for PBXNativeTarget "SaarlandMassStab" */;
+			buildPhases = (
+				E001000200000002 /* Sources */,
+				E001000100000001 /* Frameworks */,
+				E001000300000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SaarlandMassStab;
+			productName = SaarlandMassStab;
+			productReference = D001000100000001 /* SaarlandMassStab.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C001000000000000 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					C001000100000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = C001000300000003 /* Build configuration list for PBXProject "SaarlandMassStab" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = de;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				de,
+				en,
+				Base,
+			);
+			mainGroup = F001000000000000;
+			productRefGroup = F001000200000002 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C001000100000001 /* SaarlandMassStab */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E001000300000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B00100010000000B /* vergleichsobjekte.json in Resources */,
+				B00100010000000C /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E001000200000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B001000100000001 /* SaarlandMassApp.swift in Sources */,
+				B001000200000002 /* ContentView.swift in Sources */,
+				3250844D2F6B1764005B85F9 /* Strings.swift in Sources */,
+				B001000300000003 /* ComparisonObject.swift in Sources */,
+				325084552F6B17EF005B85F9 /* ReleaseConfig.swift in Sources */,
+				B001000400000004 /* UnitConverterService.swift in Sources */,
+				B001000500000005 /* SaarlandViewModel.swift in Sources */,
+				B001000600000006 /* CompareListView.swift in Sources */,
+				B001000700000007 /* DetailView.swift in Sources */,
+				B001000800000008 /* CalculatorView.swift in Sources */,
+				B001000900000009 /* RandomFactView.swift in Sources */,
+				B00100010000000A /* ColorExtension.swift in Sources */,
+				3250845D2F6B184B005B85F9 /* AppConfig.swift in Sources */,
+				B00100010000000D /* KIVergleichViewModel.swift in Sources */,
+				B00100010000000E /* KIVergleichView.swift in Sources */,
+				B00100010000000F /* ShareableCardView.swift in Sources */,
+				B000100010000010 /* QuizViewModel.swift in Sources */,
+				B000100010000011 /* QuizView.swift in Sources */,
+				B000100010000012 /* OnboardingView.swift in Sources */,
+				325084512F6B1769005B85F9 /* Color+SaarlandTheme.swift in Sources */,
+				325084592F6B180D005B85F9 /* AppStoreReviewRequest.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C001000400000004 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C001000500000005 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C001000600000006 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = R5KAWV47V9;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Saarland Rechner";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = de.saarlandmass.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C001000700000007 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = R5KAWV47V9;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Saarland Rechner";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = de.saarlandmass.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C001000200000002 /* Build configuration list for PBXNativeTarget "SaarlandMassStab" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C001000600000006 /* Debug */,
+				C001000700000007 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C001000300000003 /* Build configuration list for PBXProject "SaarlandMassStab" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C001000400000004 /* Debug */,
+				C001000500000005 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C001000000000000 /* Project object */;
+}
