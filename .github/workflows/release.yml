@@ -29,7 +29,15 @@ jobs:
 
       - name: Find .app
         run: |
-          APP_PATH=$(find build -name "SwiftTranslate.app" -type d | head -1)
+          echo "=== build directory contents ==="
+          find build -name "*.app" -type d 2>/dev/null || true
+          APP_PATH=$(find build -name "SwiftTranslate.app" -type d 2>/dev/null | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "SwiftTranslate.app not found, searching wider..."
+            find . -name "SwiftTranslate.app" -type d 2>/dev/null
+            exit 1
+          fi
+          echo "Found: $APP_PATH"
           echo "APP_PATH=$APP_PATH" >> $GITHUB_ENV
 
       - name: Create DMG
