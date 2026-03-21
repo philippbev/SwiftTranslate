@@ -71,7 +71,10 @@ jobs:
 
       - name: Ad-hoc sign app bundle
         run: |
-          codesign --force --deep --sign - SwiftTranslate.app
+          # Remove the linker-injected ad-hoc signature from the binary first,
+          # then re-sign the whole bundle so Info.plist gets bound properly.
+          codesign --remove-signature "SwiftTranslate.app/Contents/MacOS/SwiftTranslate"
+          codesign --force --deep --sign - --options runtime SwiftTranslate.app
 
       - name: Create DMG
         run: |
