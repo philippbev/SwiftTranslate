@@ -22,7 +22,7 @@ struct SettingsView: View {
                     get: { state.sourceLang },
                     set: { state.sourceLang = $0; state.manualLanguageSwap = true }
                 )) {
-                    ForEach(SupportedLanguage.all) { lang in
+                    ForEach([SupportedLanguage.english, .german]) { lang in
                         Text("\(lang.flag) \(lang.displayName)").tag(lang)
                     }
                 }
@@ -30,7 +30,7 @@ struct SettingsView: View {
                     get: { state.targetLang },
                     set: { state.targetLang = $0; state.manualLanguageSwap = true }
                 )) {
-                    ForEach(SupportedLanguage.all) { lang in
+                    ForEach([SupportedLanguage.english, .german]) { lang in
                         Text("\(lang.flag) \(lang.displayName)").tag(lang)
                     }
                 }
@@ -69,6 +69,14 @@ struct SettingsView: View {
                 } label: {
                     Text(L("settings.history.clear"))
                 }
+            }
+
+            let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
+            Section {
+                Text("SwiftTranslate v\(version)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
             }
         }
         .formStyle(.grouped)

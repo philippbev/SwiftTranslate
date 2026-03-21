@@ -13,7 +13,7 @@ final class HistoryStore: HistoryStoring {
     private(set) var entries: [HistoryEntry] = []
     private let localKey = "history_v1"
     private let iCloudKey = "history_icloud_v1"
-    private let maxEntries = 10
+    private let maxEntries = 50
 
     init() {
         load()

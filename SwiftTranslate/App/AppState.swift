@@ -61,7 +61,11 @@ final class AppState {
     private let translationCacheLimit = 50
 
     // MARK: Settings
-    var autoTranslateOnPaste: Bool = UserDefaults.standard.bool(forKey: "autoTranslateOnPaste") {
+    var autoTranslateOnPaste: Bool = {
+        let key = "autoTranslateOnPaste"
+        if UserDefaults.standard.object(forKey: key) == nil { return true }
+        return UserDefaults.standard.bool(forKey: key)
+    }() {
         didSet { UserDefaults.standard.set(autoTranslateOnPaste, forKey: "autoTranslateOnPaste") }
     }
 
