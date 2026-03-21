@@ -120,13 +120,17 @@ private class RightClickTarget: NSObject {
         if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == "translator" }) {
             window.makeKeyAndOrderFront(nil)
         } else {
-            NSApp.sendAction(Selector(("showWindow:")), to: nil, from: nil)
+            // SwiftUI's private selector — no public API available
+            let sel = NSSelectorFromString("showWindow:")
+            NSApp.sendAction(sel, to: nil, from: nil)
         }
         NSApp.activate(ignoringOtherApps: true)
     }
 
     @objc private func openSettings() {
-        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+        // SwiftUI's private selector — no public API available
+        let sel = NSSelectorFromString("showSettingsWindow:")
+        NSApp.sendAction(sel, to: nil, from: nil)
         NSApp.activate(ignoringOtherApps: true)
     }
 }
