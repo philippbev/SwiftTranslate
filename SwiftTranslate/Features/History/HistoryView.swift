@@ -20,6 +20,10 @@ struct HistoryView: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture { onSelect(entry) }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("\(entry.source), \(entry.from.displayName) → \(entry.to.displayName), \(entry.translation)")
+                    .accessibilityHint(L("a11y.history.hint"))
+                    .accessibilityAddTraits(.isButton)
                 }
                 .listStyle(.plain)
             }

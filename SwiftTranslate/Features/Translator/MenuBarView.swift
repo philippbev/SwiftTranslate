@@ -48,15 +48,20 @@ struct TranslatorView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(String(format: L("a11y.sourcelang"), displaySource.displayName))
                 Spacer()
                 Button { state.swap() } label: {
                     Image(systemName: "arrow.left.arrow.right")
                 }
                 .buttonStyle(.plain)
                 .help(Text(L("swap.languages")))
+                .accessibilityLabel(L("swap.languages"))
+                .accessibilityHint(L("a11y.swap.hint"))
                 Spacer()
                 Text("\(state.targetLang.flag) \(state.targetLang.displayName)")
                     .font(.subheadline).fontWeight(.semibold)
+                    .accessibilityLabel(String(format: L("a11y.targetlang"), state.targetLang.displayName))
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
@@ -99,6 +104,7 @@ struct TranslatorView: View {
                                 .foregroundStyle(count > 500 ? Color.red : count > 400 ? Color.orange : Color.secondary.opacity(0.5))
                                 .padding(.trailing, 10)
                                 .padding(.bottom, 4)
+                                .accessibilityLabel(String(format: L("a11y.charcount"), count))
                         }
                         .frame(width: 340)
                         .background(Color(nsColor: .textBackgroundColor))
@@ -137,6 +143,7 @@ struct TranslatorView: View {
                 .buttonStyle(.plain)
                 .help(showHistory ? Text(L("close")) : Text(L("history")))
                 .foregroundStyle(showHistory ? .primary : .secondary)
+                .accessibilityLabel(showHistory ? L("close") : L("history"))
 
                 if !showHistory {
                     Spacer()
@@ -156,12 +163,14 @@ struct TranslatorView: View {
                     .buttonStyle(.plain)
                     .foregroundStyle(.secondary)
                     .help(Text(L("clear")))
+                    .accessibilityLabel(L("clear"))
                     .disabled(state.sourceText.isEmpty && state.translatedText.isEmpty)
 
                     Button(L("translate")) { state.translate() }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.small)
                         .keyboardShortcut(.return, modifiers: .command)
+                        .accessibilityHint(L("a11y.translate.hint"))
                         .disabled(state.sourceText.isEmpty || state.isTranslating)
                 } else {
                     Spacer()
