@@ -21,6 +21,17 @@ struct SwiftTranslateApp: App {
         }
         .menuBarExtraStyle(.window)
 
+        Window(L("window.title"), id: "translator") {
+            ContentView()
+                .environment(state)
+        }
+        .defaultSize(width: 700, height: 420)
+        .commands {
+            CommandGroup(after: .appInfo) {
+                EmptyView()
+            }
+        }
+
         Settings {
             SettingsView()
                 .environment(state)
@@ -83,10 +94,13 @@ private class RightClickTarget: NSObject {
         guard let event = NSApp.currentEvent else { return }
         if event.type == .rightMouseUp {
             let menu = NSMenu()
+            let windowItem = NSMenuItem(title: L("window.open"), action: #selector(openWindow), keyEquivalent: "n")
+            windowItem.target = self
             let settingsItem = NSMenuItem(title: "Einstellungen…", action: #selector(openSettings), keyEquivalent: ",")
             settingsItem.target = self
             let quitItem = NSMenuItem(title: "SwiftTranslate beenden", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
             quitItem.target = NSApp
+            menu.addItem(windowItem)
             menu.addItem(settingsItem)
             menu.addItem(.separator())
             menu.addItem(quitItem)
@@ -97,6 +111,14 @@ private class RightClickTarget: NSObject {
                 _ = originalTarget?.perform(action, with: sender)
             }
         }
+    }
+
+    @objc private func openWindow() {
+        NSApp.sendAction(Selector(("showWindow:")), to: nil, from: nil)
+        if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == "translator" }) {
+            window.makeKeyAndOrderFront(nil)
+        }
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     @objc private func openSettings() {

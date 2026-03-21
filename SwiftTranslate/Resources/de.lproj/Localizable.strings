@@ -1,6 +1,8 @@
 // MARK: - MenuBarView
 "detected" = "erkannt";
 "swap.languages" = "Sprachen tauschen";
+"window.title" = "SwiftTranslate";
+"window.open" = "Fenster öffnen…";
 "input.placeholder" = "Text eingeben…";
 "output.placeholder" = "Übersetzung…";
 "close" = "Schließen";
