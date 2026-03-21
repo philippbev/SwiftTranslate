@@ -21,6 +21,10 @@ struct MultilineTextField: NSViewRepresentable {
         tv.isAutomaticQuoteSubstitutionEnabled = false
         tv.isAutomaticDashSubstitutionEnabled = false
         tv.isAutomaticTextReplacementEnabled = false
+        tv.isAutomaticSpellingCorrectionEnabled = false
+        tv.isAutomaticTextCompletionEnabled = false
+        tv.isContinuousSpellCheckingEnabled = false
+        tv.isGrammarCheckingEnabled = false
         tv.font = .systemFont(ofSize: 15)
         tv.textContainerInset = NSSize(width: 10, height: 10)
         tv.backgroundColor = .clear
