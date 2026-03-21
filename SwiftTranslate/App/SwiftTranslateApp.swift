@@ -128,10 +128,17 @@ private class RightClickTarget: NSObject {
     }
 
     @objc private func openSettings() {
-        // SwiftUI's private selector — no public API available
+        NSApp.openSettings()
+        NSApp.activate(ignoringOtherApps: true)
+    }
+}
+
+// MARK: - Settings helper (avoids SettingsLink warning in AppKit context)
+
+extension NSApplication {
+    func openSettings() {
         let sel = NSSelectorFromString("showSettingsWindow:")
         NSApp.sendAction(sel, to: nil, from: nil)
-        NSApp.activate(ignoringOtherApps: true)
     }
 }
 
