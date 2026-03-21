@@ -27,6 +27,7 @@ struct ContentView: View {
                             }
                         }
                     )
+                    .accessibilityIdentifier("sourceTextField")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     Divider()
                     sourceFooter(state: state)
@@ -55,6 +56,7 @@ struct ContentView: View {
                                 placeholder: L("output.placeholder"),
                                 isEditable: false
                             )
+                            .accessibilityIdentifier("outputTextField")
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .background(Color(nsColor: .controlBackgroundColor).opacity(0.5))
                             if state.isTranslating { ProgressView() }
@@ -80,6 +82,7 @@ struct ContentView: View {
                 }
                 .help(L("swap.languages"))
                 .accessibilityLabel(L("swap.languages"))
+                .accessibilityIdentifier("swapButton")
             }
             ToolbarItem(placement: .automatic) {
                 Button {
@@ -90,6 +93,7 @@ struct ContentView: View {
                 }
                 .help(showHistory ? L("close") : L("history"))
                 .accessibilityLabel(showHistory ? L("close") : L("history"))
+                .accessibilityIdentifier("historyButton")
             }
             ToolbarItem(placement: .primaryAction) {
                 Button { state.translate() } label: {
@@ -101,6 +105,7 @@ struct ContentView: View {
                 .disabled(state.sourceText.isEmpty || state.isTranslating)
                 .accessibilityLabel(L("translate"))
                 .accessibilityHint(L("a11y.translate.hint"))
+                .accessibilityIdentifier("translateButton")
             }
         }
         .translationTask(state.translationConfig) { session in
@@ -145,6 +150,7 @@ struct ContentView: View {
         .accessibilityLabel(isSource
             ? String(format: L("a11y.sourcelang"), display.displayName)
             : String(format: L("a11y.targetlang"), display.displayName))
+        .accessibilityIdentifier(isSource ? "sourceLangLabel" : "targetLangLabel")
     }
 
     @ViewBuilder
@@ -165,6 +171,7 @@ struct ContentView: View {
             .foregroundStyle(.secondary)
             .help(L("clear"))
             .accessibilityLabel(L("clear"))
+            .accessibilityIdentifier("clearButton")
             .disabled(state.sourceText.isEmpty && state.translatedText.isEmpty)
         }
         .padding(.horizontal, 12)
