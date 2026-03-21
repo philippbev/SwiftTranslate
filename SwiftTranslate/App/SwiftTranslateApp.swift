@@ -120,7 +120,7 @@ private class RightClickTarget: NSObject {
         if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == "translator" }) {
             window.makeKeyAndOrderFront(nil)
         } else {
-            NSApp.sendAction(Selector(("showWindow:")), to: nil, from: nil)
+            NSApp.sendAction(#selector(NSApplication.showWindow), to: nil, from: nil)
         }
         NSApp.activate(ignoringOtherApps: true)
     }
@@ -135,4 +135,5 @@ private class RightClickTarget: NSObject {
 
 private extension NSApplication {
     @objc func showSettingsWindow() {}
+    @objc func showWindow() {}
 }
