@@ -29,7 +29,9 @@ A macOS menu bar app for fast offline translation. Powered by Apple's on-device 
 
 ## Installation
 
-Download the latest release from the [Releases](../../releases) page, unzip it, and move **SwiftTranslate.app** to your Applications folder.
+Download the latest `.dmg` from the [Releases](../../releases) page, open it, and drag **SwiftTranslate.app** to your Applications folder.
+
+> **Gatekeeper note:** The release build is unsigned. On first launch, right-click the app and choose **Open** to bypass the macOS security warning.
 
 **Build from source**
 

@@ -1,0 +1,91 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Build & Package
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app
+
+      - name: Build release binary
+        run: swift build -c release --arch arm64 --arch x86_64
+
+      - name: Assemble .app bundle
+        run: |
+          APP="SwiftTranslate.app"
+          BIN=".build/apple/Products/Release/SwiftTranslate"
+
+          mkdir -p "$APP/Contents/MacOS"
+          mkdir -p "$APP/Contents/Resources"
+
+          cp "$BIN" "$APP/Contents/MacOS/SwiftTranslate"
+
+          # Copy localised resources built by SPM
+          find .build/apple/Products/Release/SwiftTranslate_SwiftTranslate.bundle \
+               -name "*.lproj" -exec cp -R {} "$APP/Contents/Resources/" \; 2>/dev/null || true
+
+          cat > "$APP/Contents/Info.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+            "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleIdentifier</key>
+            <string>de.philippbevier.SwiftTranslate</string>
+            <key>CFBundleName</key>
+            <string>SwiftTranslate</string>
+            <key>CFBundleDisplayName</key>
+            <string>SwiftTranslate</string>
+            <key>CFBundleExecutable</key>
+            <string>SwiftTranslate</string>
+            <key>CFBundlePackageType</key>
+            <string>APPL</string>
+            <key>CFBundleVersion</key>
+            <string>${{ github.ref_name }}</string>
+            <key>CFBundleShortVersionString</key>
+            <string>${{ github.ref_name }}</string>
+            <key>LSMinimumSystemVersion</key>
+            <string>15.0</string>
+            <key>LSUIElement</key>
+            <true/>
+            <key>NSHighResolutionCapable</key>
+            <true/>
+            <key>NSPrincipalClass</key>
+            <string>NSApplication</string>
+          </dict>
+          </plist>
+          PLIST
+
+      - name: Create DMG
+        run: |
+          hdiutil create \
+            -volname "SwiftTranslate" \
+            -srcfolder "SwiftTranslate.app" \
+            -ov \
+            -format UDZO \
+            "SwiftTranslate-${{ github.ref_name }}.dmg"
+
+      - name: Upload DMG to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "SwiftTranslate-${{ github.ref_name }}.dmg"
+          body: |
+            ## SwiftTranslate ${{ github.ref_name }}
+
+            ### Installation
+            1. Download the `.dmg` below.
+            2. Open it and drag **SwiftTranslate.app** to your Applications folder.
+            3. On first launch, right-click the app and choose **Open** to bypass the Gatekeeper warning (unsigned build).
+
+            ### Requirements
+            macOS 15 Sequoia or later · Apple Silicon & Intel
