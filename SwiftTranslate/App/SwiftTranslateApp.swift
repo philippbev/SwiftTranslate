@@ -17,8 +17,6 @@ struct SwiftTranslateApp: App {
                         NSApp.activate(ignoringOtherApps: true)
                     }
                     appDelegate.appState = state
-                    // Setup after MenuBarExtra is fully loaded
-                    appDelegate.setupRightClickMenu()
                 }
         }
         .menuBarExtraStyle(.window)
@@ -49,6 +47,24 @@ class AppDelegate: NSObject, NSApplicationDelegate, RightClickMenuDelegate {
     weak var appState: AppState?
     private var statusItem: NSStatusItem?
     private var clickHandler: StatusItemClickHandler?
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        retrySetup(attempts: 10)
+    }
+
+    private func retrySetup(attempts: Int) {
+        guard attempts > 0 else {
+            print("[AppDelegate] Gave up finding NSStatusItem after all attempts")
+            return
+        }
+        if Self.findStatusItem() != nil {
+            setupRightClickMenu()
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.retrySetup(attempts: attempts - 1)
+            }
+        }
+    }
 
     func setupRightClickMenu() {
         guard let item = Self.findStatusItem() else {
