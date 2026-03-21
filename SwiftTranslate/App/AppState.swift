@@ -167,6 +167,13 @@ final class AppState {
 
     /// Called while user types — debounced 300ms for detection, 800ms for auto-translate.
     func updateDetectedLang() {
+        // Clear translation when source text is empty
+        if sourceText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            translatedText = ""
+            detectedLang = nil
+            return
+        }
+
         // Language detection: skip if manually swapped or locked
         if !manualLanguageSwap && !sourceLangLocked {
             detectionDebounceTask?.cancel()
