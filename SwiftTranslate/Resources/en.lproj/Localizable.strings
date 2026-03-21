@@ -2,6 +2,7 @@
 "detected" = "detected";
 "lang.lock.off" = "Lock source language";
 "lang.lock.on" = "Unlock source language";
+"quit" = "Quit SwiftTranslate";
 "swap.languages" = "Swap languages";
 "window.title" = "SwiftTranslate";
 "window.open" = "Open Window…";

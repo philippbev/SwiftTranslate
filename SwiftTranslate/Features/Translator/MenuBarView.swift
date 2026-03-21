@@ -156,6 +156,16 @@ struct TranslatorView: View {
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
+                .help(Text("Einstellungen"))
+
+                Button {
+                    NSApp.terminate(nil)
+                } label: {
+                    Image(systemName: "power")
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
+                .help(Text(L("quit")))
 
                 Divider()
                     .frame(height: 14)
