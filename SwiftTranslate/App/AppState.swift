@@ -257,6 +257,7 @@ final class AppState {
     }
 
     func swap() {
+        guard !isTranslating else { return }
         Swift.swap(&sourceText, &translatedText)
         Swift.swap(&sourceLang, &targetLang)
         manualLanguageSwap = true
@@ -273,6 +274,8 @@ final class AppState {
         showCopied = false
         translationCache.removeAll()
         invalidateTranslationConfig()
+        // Invalidate any in-flight translation so translationDidFinish/Fail is ignored
+        translationConfig = nil
     }
 
     // MARK: - Private
