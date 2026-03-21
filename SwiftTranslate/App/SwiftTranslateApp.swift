@@ -26,6 +26,7 @@ struct SwiftTranslateApp: App {
                 .environment(state)
         }
         .defaultSize(width: 700, height: 420)
+        .windowResizability(.contentMinSize)
         .commands {
             CommandGroup(after: .appInfo) {
                 EmptyView()

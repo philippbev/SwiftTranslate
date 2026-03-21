@@ -5,85 +5,74 @@ import Translation
 struct ContentView: View {
     @Environment(AppState.self) private var state
 
+    // Persist split position across launches
+    @SceneStorage("window.splitFraction") private var splitFraction: Double = 0.5
+    @State private var showHistory = false
+
     var body: some View {
         @Bindable var state = state
-        HSplitView {
-            // Source pane
-            VStack(spacing: 0) {
-                paneHeader(
-                    lang: state.sourceLang,
-                    detected: state.detectedLang,
-                    isSource: true
-                )
-                Divider()
-                MultilineTextField(
-                    text: $state.sourceText,
-                    placeholder: L("input.placeholder"),
-                    isEditable: true,
-                    onPaste: {
-                        if state.autoTranslateOnPaste && !state.sourceText.isEmpty {
-                            state.translate()
-                        }
-                    }
-                )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                Divider()
-                HStack {
-                    if !state.sourceText.isEmpty {
-                        let count = state.sourceText.count
-                        Text("\(count) / 500")
-                            .font(.caption2.monospacedDigit())
-                            .foregroundStyle(count > 500 ? .red : count > 400 ? .orange : Color.secondary.opacity(0.5))
-                    }
-                    Spacer()
-                    Button { state.clear() } label: {
-                        Image(systemName: "xmark.circle")
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.secondary)
-                    .help(L("clear"))
-                    .disabled(state.sourceText.isEmpty && state.translatedText.isEmpty)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-            }
-            .frame(minWidth: 200)
-
-            // Target pane
-            VStack(spacing: 0) {
-                paneHeader(
-                    lang: state.targetLang,
-                    detected: nil,
-                    isSource: false
-                )
-                Divider()
-                ZStack {
+        GeometryReader { geo in
+            HSplitView {
+                // Source pane
+                VStack(spacing: 0) {
+                    paneHeader(lang: state.sourceLang, detected: state.detectedLang, isSource: true)
+                    Divider()
                     MultilineTextField(
-                        text: $state.translatedText,
-                        placeholder: L("output.placeholder"),
-                        isEditable: false
+                        text: $state.sourceText,
+                        placeholder: L("input.placeholder"),
+                        isEditable: true,
+                        onPaste: {
+                            if state.autoTranslateOnPaste && !state.sourceText.isEmpty {
+                                state.translate()
+                            }
+                        }
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(nsColor: .controlBackgroundColor).opacity(0.5))
-                    if state.isTranslating {
-                        ProgressView()
+                    Divider()
+                    sourceFooter(state: state)
+                }
+                .frame(minWidth: 200, idealWidth: geo.size.width * splitFraction)
+
+                // Target pane
+                VStack(spacing: 0) {
+                    if showHistory {
+                        paneHeader(lang: state.targetLang, detected: nil, isSource: false)
+                        Divider()
+                        HistoryView(onSelect: { entry in
+                            state.sourceText = entry.source
+                            state.translatedText = entry.translation
+                            state.sourceLang = entry.from
+                            state.targetLang = entry.to
+                            showHistory = false
+                        })
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        paneHeader(lang: state.targetLang, detected: nil, isSource: false)
+                        Divider()
+                        ZStack {
+                            MultilineTextField(
+                                text: $state.translatedText,
+                                placeholder: L("output.placeholder"),
+                                isEditable: false
+                            )
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(Color(nsColor: .controlBackgroundColor).opacity(0.5))
+                            if state.isTranslating { ProgressView() }
+                        }
+                        Divider()
+                        targetFooter(state: state)
                     }
                 }
-                Divider()
-                HStack {
-                    if !state.translatedText.isEmpty && !state.isTranslating {
-                        Label(L("copied"), systemImage: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
-                            .font(.caption)
-                    }
-                    Spacer()
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
+                .frame(minWidth: 200)
             }
-            .frame(minWidth: 200)
         }
         .toolbar {
+            // Language pair display
+            ToolbarItem(placement: .navigation) {
+                Text("\(state.sourceLang.flag) \(state.sourceLang.displayName)  →  \(state.targetLang.flag) \(state.targetLang.displayName)")
+                    .font(.subheadline).fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+            }
             ToolbarItem(placement: .automatic) {
                 Button { state.swap() } label: {
                     Image(systemName: "arrow.left.arrow.right")
@@ -93,6 +82,16 @@ struct ContentView: View {
                 .accessibilityLabel(L("swap.languages"))
             }
             ToolbarItem(placement: .automatic) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) { showHistory.toggle() }
+                } label: {
+                    Image(systemName: showHistory ? "xmark" : "clock")
+                    Text(showHistory ? L("close") : L("history"))
+                }
+                .help(showHistory ? L("close") : L("history"))
+                .accessibilityLabel(showHistory ? L("close") : L("history"))
+            }
+            ToolbarItem(placement: .primaryAction) {
                 Button { state.translate() } label: {
                     Image(systemName: "arrow.trianglehead.turn.up.right.circle.fill")
                     Text(L("translate"))
@@ -123,8 +122,10 @@ struct ContentView: View {
         } message: {
             Text(state.errorMessage ?? "")
         }
-        .frame(minWidth: 600, minHeight: 360)
+        .frame(minWidth: 500, minHeight: 320)
     }
+
+    // MARK: - Sub-views
 
     @ViewBuilder
     private func paneHeader(lang: SupportedLanguage, detected: SupportedLanguage?, isSource: Bool) -> some View {
@@ -134,12 +135,54 @@ struct ContentView: View {
                 .font(.subheadline).fontWeight(.semibold)
             if isSource, detected != nil {
                 Text(L("detected"))
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .font(.caption2).foregroundStyle(.secondary)
             }
             Spacer()
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(isSource
+            ? String(format: L("a11y.sourcelang"), display.displayName)
+            : String(format: L("a11y.targetlang"), display.displayName))
+    }
+
+    @ViewBuilder
+    private func sourceFooter(state: AppState) -> some View {
+        HStack {
+            if !state.sourceText.isEmpty {
+                let count = state.sourceText.count
+                Text("\(count) / 500")
+                    .font(.caption2.monospacedDigit())
+                    .foregroundStyle(count > 500 ? .red : count > 400 ? .orange : Color.secondary.opacity(0.5))
+                    .accessibilityLabel(String(format: L("a11y.charcount"), count))
+            }
+            Spacer()
+            Button { state.clear() } label: {
+                Image(systemName: "xmark.circle")
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(.secondary)
+            .help(L("clear"))
+            .accessibilityLabel(L("clear"))
+            .disabled(state.sourceText.isEmpty && state.translatedText.isEmpty)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+    }
+
+    @ViewBuilder
+    private func targetFooter(state: AppState) -> some View {
+        HStack {
+            if !state.translatedText.isEmpty && !state.isTranslating {
+                Label(L("copied"), systemImage: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+                    .font(.caption)
+                    .transition(.opacity)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
     }
 }
