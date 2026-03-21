@@ -2,8 +2,11 @@
 
 A lightweight macOS menu bar app for fast, offline translation — powered by Apple's on-device Translation framework. No account, no internet, no tracking.
 
-<!-- Screenshot placeholder -->
-<!-- ![SwiftTranslate](screenshot.png) -->
+<p align="center">
+  <img src="Screenshots/translator.png" width="340" alt="Translator" />
+  &nbsp;&nbsp;
+  <img src="Screenshots/settings.png" width="340" alt="Settings" />
+</p>
 
 ---
 
