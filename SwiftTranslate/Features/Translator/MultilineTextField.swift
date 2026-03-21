@@ -29,6 +29,15 @@ struct MultilineTextField: NSViewRepresentable {
         sv.borderType = .noBorder
         tv.placeholderText = placeholder
         tv.onPaste = { context.coordinator.parent.onPaste?() }
+
+        // Observe focus changes to track editing state reliably
+        NotificationCenter.default.addObserver(
+            context.coordinator,
+            selector: #selector(Coordinator.didBecomeFirstResponder),
+            name: NSTextView.didChangeSelectionNotification,
+            object: tv
+        )
+
         return sv
     }
 
@@ -43,9 +52,7 @@ struct MultilineTextField: NSViewRepresentable {
         guard !context.coordinator.isEditing else { return }
 
         if tv.string != text {
-            let selected = tv.selectedRanges
             tv.string = text
-            tv.selectedRanges = selected
             tv.needsDisplay = true
         }
     }
@@ -58,17 +65,24 @@ struct MultilineTextField: NSViewRepresentable {
 
         init(_ parent: MultilineTextField) { self.parent = parent }
 
-        func textDidBeginEditing(_ notification: Notification) {
+        @objc func didBecomeFirstResponder() {
             isEditing = true
         }
 
         func textDidChange(_ notification: Notification) {
             guard let tv = notification.object as? NSTextView else { return }
+            isEditing = true
             parent.text = tv.string
         }
 
         func textDidEndEditing(_ notification: Notification) {
             isEditing = false
+        }
+
+        // NSTextView loses focus when window resigns key
+        func textView(_ textView: NSTextView, shouldChangeTextIn range: NSRange, replacementString: String?) -> Bool {
+            isEditing = true
+            return true
         }
     }
 }
@@ -84,6 +98,24 @@ final class PlaceholderTextView: NSTextView {
     override func paste(_ sender: Any?) {
         super.paste(sender)
         onPaste?()
+    }
+
+    override var acceptsFirstResponder: Bool { isEditable }
+
+    override func becomeFirstResponder() -> Bool {
+        let result = super.becomeFirstResponder()
+        needsDisplay = true
+        return result
+    }
+
+    override func resignFirstResponder() -> Bool {
+        let result = super.resignFirstResponder()
+        needsDisplay = true
+        // Notify coordinator that editing ended
+        if let coordinator = delegate as? MultilineTextField.Coordinator {
+            coordinator.isEditing = false
+        }
+        return result
     }
 
     override func draw(_ dirtyRect: NSRect) {
