@@ -69,6 +69,10 @@ jobs:
           </plist>
           PLIST
 
+      - name: Ad-hoc sign app bundle
+        run: |
+          codesign --force --deep --sign - SwiftTranslate.app
+
       - name: Create DMG
         run: |
           hdiutil create \
