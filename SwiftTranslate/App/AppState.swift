@@ -288,4 +288,18 @@ final class AppState {
     private func invalidateTranslationConfig() {
         translationConfig?.invalidate()
     }
+
+    // MARK: - Language Pack Verification
+
+    /// Checks that EN↔DE translation packs are installed. Resets onboarding if neither direction is available.
+    func verifyLanguagePacks() async {
+        let availability = LanguageAvailability()
+        let enStatus = await availability.status(from: Locale.Language(identifier: "en"),
+                                                  to: Locale.Language(identifier: "de"))
+        let deStatus = await availability.status(from: Locale.Language(identifier: "de"),
+                                                  to: Locale.Language(identifier: "en"))
+        if enStatus != .installed && deStatus != .installed {
+            onboardingCompleted = false
+        }
+    }
 }
