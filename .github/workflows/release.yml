@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: macos-15
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -69,14 +71,10 @@ jobs:
 
       - name: Create release
         run: |
-          SHORT_SHA=$(git rev-parse --short HEAD)
-          TAG="v1.2.0-${SHORT_SHA}"
-          git tag "$TAG"
-          git push origin "$TAG"
-          gh release create "$TAG" SwiftTranslate.dmg \
-            --title "$TAG" \
+          gh release create "latest" SwiftTranslate.dmg \
+            --title "Latest Build" \
             --latest \
-            --notes "## SwiftTranslate ${TAG}
+            --notes "## SwiftTranslate
 
           ### Installation
           1. Download the \`.dmg\` below.
