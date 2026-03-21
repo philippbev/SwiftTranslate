@@ -52,7 +52,11 @@ struct MultilineTextField: NSViewRepresentable {
         tv.onPaste = { context.coordinator.parent.onPaste?() }
         context.coordinator.parent = self
 
-        // Never overwrite text while the user is actively editing this view
+        // Always sync if text was cleared programmatically; otherwise
+        // skip overwriting while the user is actively editing.
+        if text.isEmpty {
+            context.coordinator.isEditing = false
+        }
         guard !context.coordinator.isEditing else { return }
 
         if tv.string != text {

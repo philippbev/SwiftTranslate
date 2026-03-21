@@ -10,6 +10,11 @@ struct SettingsView: View {
         Form {
             Section(L("settings.shortcuts")) {
                 KeyboardShortcuts.Recorder(L("settings.shortcut.open"), name: .openTranslator)
+                Button(role: .destructive) {
+                    KeyboardShortcuts.reset(.openTranslator)
+                } label: {
+                    Text(L("settings.reset.shortcut"))
+                }
             }
 
             Section(L("settings.languages")) {
@@ -67,6 +72,11 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 380, height: 440)
+        .frame(width: 380, height: 480)
+        .onAppear {
+            // Activate the app so the settings window becomes key —
+            // required for KeyboardShortcuts.Recorder to receive input.
+            NSApp.activate(ignoringOtherApps: true)
+        }
     }
 }

@@ -27,7 +27,7 @@
 "feature.autodetect.subtitle" = "EN and DE are detected automatically.";
 "feature.autocopy.title" = "Auto-Copy";
 "feature.autocopy.subtitle" = "Translation copied to clipboard instantly.";
-"feature.hotkey.title" = "Global Hotkey ⌘⇧T";
+"feature.hotkey.title" = "Global Hotkey ⌥⇧T";
 "feature.hotkey.subtitle" = "Open the app from anywhere.";
 "onboarding.continue" = "Continue";
 "download.title" = "Download Language Packs";
@@ -45,7 +45,7 @@
 "download.retry" = "Try again";
 "ready.title" = "Ready!";
 "ready.subtitle" = "All packs are installed.\nYou can start right away.";
-"tip.hotkey" = "**⌘⇧T** — Open app from anywhere";
+"tip.hotkey" = "**⌥⇧T** — Open app from anywhere";
 "tip.translate" = "**⌘↵** — Translate text";
 "tip.autocopy" = "Translation is **copied automatically**";
 "onboarding.finish" = "Let's go!";
@@ -62,6 +62,7 @@
 "a11y.history.hint" = "Tap to reuse this entry";
 
 // MARK: - SettingsView
+"settings" = "Settings";
 "settings.shortcuts" = "Keyboard Shortcuts";
 "settings.shortcut.open" = "Open Translator";
 "settings.languages" = "Languages";
@@ -75,3 +76,5 @@
 "settings.history.entries" = "Entries";
 "settings.history.count %lld" = "%lld of 10";
 "settings.history.clear" = "Clear History";
+"settings.reset" = "Reset to Defaults";
+"settings.reset.shortcut" = "Reset Shortcut";

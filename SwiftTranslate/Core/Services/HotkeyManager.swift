@@ -2,7 +2,7 @@ import AppKit
 import KeyboardShortcuts
 
 extension KeyboardShortcuts.Name {
-    static let openTranslator = Self("openTranslator", default: .init(.t, modifiers: [.command, .shift]))
+    static let openTranslator = Self("openTranslator", default: .init(.t, modifiers: [.option, .shift]))
 }
 
 @MainActor

@@ -27,7 +27,7 @@
 "feature.autodetect.subtitle" = "EN und DE werden automatisch erkannt.";
 "feature.autocopy.title" = "Auto-Copy";
 "feature.autocopy.subtitle" = "Übersetzung direkt in die Zwischenablage.";
-"feature.hotkey.title" = "Globaler Hotkey ⌘⇧T";
+"feature.hotkey.title" = "Globaler Hotkey ⌥⇧T";
 "feature.hotkey.subtitle" = "Öffnet die App von überall.";
 "onboarding.continue" = "Weiter";
 "download.title" = "Sprachpakete laden";
@@ -45,7 +45,7 @@
 "download.retry" = "Erneut versuchen";
 "ready.title" = "Bereit!";
 "ready.subtitle" = "Alle Pakete sind installiert.\nDu kannst sofort loslegen.";
-"tip.hotkey" = "**⌘⇧T** — App von überall öffnen";
+"tip.hotkey" = "**⌥⇧T** — App von überall öffnen";
 "tip.translate" = "**⌘↵** — Text übersetzen";
 "tip.autocopy" = "Übersetzung wird **automatisch kopiert**";
 "onboarding.finish" = "Los geht's!";
@@ -62,6 +62,7 @@
 "history.empty" = "Kein Verlauf";
 
 // MARK: - SettingsView
+"settings" = "Einstellungen";
 "settings.shortcuts" = "Tastenkürzel";
 "settings.shortcut.open" = "Translator öffnen";
 "settings.languages" = "Sprachen";
@@ -75,3 +76,5 @@
 "settings.history.entries" = "Einträge";
 "settings.history.count %lld" = "%lld von 10";
 "settings.history.clear" = "Verlauf löschen";
+"settings.reset" = "Auf Standard zurücksetzen";
+"settings.reset.shortcut" = "Shortcut zurücksetzen";
