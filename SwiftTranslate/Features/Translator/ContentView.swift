@@ -127,6 +127,12 @@ struct ContentView: View {
         .onChange(of: state.sourceText) { _, _ in
             state.updateDetectedLang()
         }
+        .onAppear {
+            // Give focus to the source text field when the window opens
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                NSApp.keyWindow?.makeFirstResponder(nil)
+            }
+        }
         .alert(L("error.title"), isPresented: Binding(
             get: { state.errorMessage != nil },
             set: { if !$0 { state.errorMessage = nil } }

@@ -17,6 +17,10 @@ struct MultilineTextField: NSViewRepresentable {
         tv.isEditable = isEditable
         tv.isSelectable = true
         tv.isRichText = false
+        tv.allowsUndo = true
+        tv.isAutomaticQuoteSubstitutionEnabled = false
+        tv.isAutomaticDashSubstitutionEnabled = false
+        tv.isAutomaticTextReplacementEnabled = false
         tv.font = .systemFont(ofSize: 15)
         tv.textContainerInset = NSSize(width: 10, height: 10)
         tv.backgroundColor = .clear
@@ -33,12 +37,15 @@ struct MultilineTextField: NSViewRepresentable {
         tv.isEditable = isEditable
         tv.placeholderText = placeholder
         tv.onPaste = { context.coordinator.parent.onPaste?() }
+        context.coordinator.parent = self
 
-        // Never interfere while the user is typing
+        // Never overwrite text while the user is actively editing this view
         guard !context.coordinator.isEditing else { return }
 
         if tv.string != text {
+            let selected = tv.selectedRanges
             tv.string = text
+            tv.selectedRanges = selected
             tv.needsDisplay = true
         }
     }
