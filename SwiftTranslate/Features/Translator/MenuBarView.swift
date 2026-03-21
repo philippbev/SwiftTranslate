@@ -9,7 +9,7 @@ struct MenuBarView: View {
         Group {
             if state.onboardingCompleted {
                 TranslatorView()
-                    .translationTask(state.translationConfig) { session in
+                    .translationTask(state.translationConfig) { @MainActor session in
                         let text = state.sourceText.trimmingCharacters(in: .whitespacesAndNewlines)
                         guard !text.isEmpty else {
                             state.isTranslating = false
