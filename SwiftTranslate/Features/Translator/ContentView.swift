@@ -16,23 +16,22 @@ struct ContentView: View {
                 VStack(spacing: 0) {
                     paneHeader(lang: state.sourceLang, detected: state.detectedLang, isSource: true)
                     Divider()
-                    ZStack(alignment: .topLeading) {
-                        if state.sourceText.isEmpty {
-                            Text(L("input.placeholder"))
-                                .foregroundStyle(.tertiary)
-                                .font(.system(size: 15))
-                                .padding(.horizontal, 5)
-                                .padding(.vertical, 8)
-                                .allowsHitTesting(false)
+                    TextEditor(text: $state.sourceText)
+                        .font(.system(size: 15))
+                        .scrollContentBackground(.hidden)
+                        .background(.clear)
+                        .overlay(alignment: .topLeading) {
+                            if state.sourceText.isEmpty {
+                                Text(L("input.placeholder"))
+                                    .foregroundStyle(.tertiary)
+                                    .font(.system(size: 15))
+                                    .padding(.horizontal, 5)
+                                    .padding(.vertical, 8)
+                                    .allowsHitTesting(false)
+                            }
                         }
-                        TextEditor(text: $state.sourceText)
-                            .font(.system(size: 15))
-                            .scrollContentBackground(.hidden)
-                            .background(.clear)
-                            .accessibilityIdentifier("sourceTextField")
-                    }
-                    .padding(.horizontal, 9)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .accessibilityIdentifier("sourceTextField")
                     Divider()
                     sourceFooter(state: state)
                 }
@@ -54,23 +53,24 @@ struct ContentView: View {
                     } else {
                         paneHeader(lang: state.targetLang, detected: nil, isSource: false)
                         Divider()
-                        ZStack(alignment: .topLeading) {
-                            if state.translatedText.isEmpty && !state.isTranslating {
-                                Text(L("output.placeholder"))
-                                    .foregroundStyle(.tertiary)
-                                    .font(.system(size: 15))
-                                    .padding(.horizontal, 5)
-                                    .padding(.vertical, 8)
-                                    .allowsHitTesting(false)
-                            }
+                        ZStack {
                             TextEditor(text: .constant(state.translatedText))
                                 .font(.system(size: 15))
                                 .scrollContentBackground(.hidden)
                                 .background(Color(nsColor: .controlBackgroundColor).opacity(0.5))
+                                .overlay(alignment: .topLeading) {
+                                    if state.translatedText.isEmpty && !state.isTranslating {
+                                        Text(L("output.placeholder"))
+                                            .foregroundStyle(.tertiary)
+                                            .font(.system(size: 15))
+                                            .padding(.horizontal, 5)
+                                            .padding(.vertical, 8)
+                                            .allowsHitTesting(false)
+                                    }
+                                }
                                 .accessibilityIdentifier("outputTextField")
                             if state.isTranslating { ProgressView() }
                         }
-                        .padding(.horizontal, 9)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         Divider()
                         targetFooter(state: state)
