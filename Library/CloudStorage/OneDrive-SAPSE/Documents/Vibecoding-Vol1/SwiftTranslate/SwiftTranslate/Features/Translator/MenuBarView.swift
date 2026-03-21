@@ -16,8 +16,15 @@ struct MenuBarView: View {
                             state.translationConfig = nil
                             return
                         }
+                        // Capture the request ID at the time this task starts.
+                        // If a newer translate() call has already bumped the ID, discard this result.
+                        let requestID = state.translationRequestID
                         do {
                             let r = try await session.translate(text)
+                            guard state.translationRequestID == requestID else {
+                                state.isTranslating = false
+                                return
+                            }
                             state.translationDidFinish(r.targetText)
                         } catch is CancellationError {
                             state.isTranslating = false

@@ -51,6 +51,8 @@ final class AppState {
     var showCopied = false
     var errorMessage: String? = nil
     var translationConfig: TranslationSession.Configuration? = nil
+    /// Bumped on every translate() call so .translationTask always sees a new identity.
+    private(set) var translationRequestID = UUID()
     var manualLanguageSwap = false
     var detectedLang: SupportedLanguage? = nil
     var sourceLangLocked: Bool = UserDefaults.standard.bool(forKey: "sourceLangLocked") {
@@ -197,9 +199,10 @@ final class AppState {
             }
 
             isTranslating = true
-            // Always create a fresh config object so SwiftUI's .translationTask
-            // sees an identity change and fires — even when the language pair is unchanged.
-            translationConfig = nil
+            // Bump the request ID first — this guarantees a new UUID even if the
+            // language pair hasn't changed, so SwiftUI's .translationTask always
+            // receives a genuinely different Configuration object and fires.
+            translationRequestID = UUID()
             translationConfig = TranslationSession.Configuration(
                 source: Locale.Language(identifier: sourceLang.localeIdentifier),
                 target: Locale.Language(identifier: targetLang.localeIdentifier)
@@ -260,14 +263,16 @@ final class AppState {
             from: sourceLang, to: targetLang
         ))
         manualLanguageSwap = false
-        // Note: do NOT invalidate translationConfig here — doing so prevents SwiftUI's
-        // .translationTask from firing on the next request, causing silent failures.
-        translationConfig = nil
+        // Do NOT touch translationConfig here — leave it as-is until the next
+        // translate() call overwrites it. Setting it to nil and then to a new value
+        // in the same Task can be batched into a single SwiftUI update where nil
+        // is never observed, causing .translationTask to not fire.
     }
 
     func translationDidFail(_ error: Error) {
         errorMessage = error.localizedDescription
         isTranslating = false
+        // On failure, nil the config so the user can retry cleanly.
         translationConfig = nil
     }
 
