@@ -92,7 +92,7 @@ private struct LanguageBar: View {
                 let displaySource = state.detectedLang ?? state.sourceLang
                 Text("\(displaySource.flag) \(displaySource.displayName)")
                     .font(.callout).fontWeight(.medium)
-                if state.detectedLang != nil && !state.isTranslating {
+                if state.detectedLang != nil && !state.isTranslating && !state.sourceLangLocked {
                     Text(L("detected"))
                         .font(.caption2)
                         .foregroundStyle(.secondary)
