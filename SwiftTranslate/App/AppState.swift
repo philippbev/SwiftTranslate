@@ -28,8 +28,12 @@ final class AppState {
     // MARK: Translation state
     var sourceText = ""
     var translatedText = ""
-    var sourceLang: SupportedLanguage = .german
-    var targetLang: SupportedLanguage = .english
+    var sourceLang: SupportedLanguage = SupportedLanguage.from(id: UserDefaults.standard.string(forKey: "sourceLang") ?? "") ?? .german {
+        didSet { UserDefaults.standard.set(sourceLang.id, forKey: "sourceLang") }
+    }
+    var targetLang: SupportedLanguage = SupportedLanguage.from(id: UserDefaults.standard.string(forKey: "targetLang") ?? "") ?? .english {
+        didSet { UserDefaults.standard.set(targetLang.id, forKey: "targetLang") }
+    }
     var isTranslating = false
     var errorMessage: String? = nil
     var translationConfig: TranslationSession.Configuration? = nil

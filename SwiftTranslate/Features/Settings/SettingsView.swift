@@ -15,7 +15,7 @@ struct SettingsView: View {
             Section(L("settings.languages")) {
                 Picker(L("settings.sourcelang"), selection: Binding(
                     get: { state.sourceLang },
-                    set: { state.sourceLang = $0 }
+                    set: { state.sourceLang = $0; state.manualLanguageSwap = true }
                 )) {
                     ForEach(SupportedLanguage.all) { lang in
                         Text("\(lang.flag) \(lang.displayName)").tag(lang)
@@ -23,7 +23,7 @@ struct SettingsView: View {
                 }
                 Picker(L("settings.targetlang"), selection: Binding(
                     get: { state.targetLang },
-                    set: { state.targetLang = $0 }
+                    set: { state.targetLang = $0; state.manualLanguageSwap = true }
                 )) {
                     ForEach(SupportedLanguage.all) { lang in
                         Text("\(lang.flag) \(lang.displayName)").tag(lang)
