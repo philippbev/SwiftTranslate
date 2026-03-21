@@ -45,19 +45,37 @@ struct SwiftTranslateApp: App {
 @available(macOS 15.0, *)
 class AppDelegate: NSObject, NSApplicationDelegate {
     weak var appState: AppState?
+    private var eventMonitor: Any?
+    private var statusItem: NSStatusItem?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.installRightClickMenu()
+            self.setup()
         }
     }
 
-    private func installRightClickMenu() {
-        guard let statusItem = Self.findStatusItem() else {
+    private func setup() {
+        guard let item = Self.findStatusItem() else {
             print("[AppDelegate] Could not find NSStatusItem")
             return
         }
-        print("[AppDelegate] Found NSStatusItem, installing right-click menu")
+        self.statusItem = item
+
+        // Listen for right-clicks globally on the status bar button
+        eventMonitor = NSEvent.addLocalMonitorForEvents(matching: [.rightMouseDown]) { [weak self] event in
+            guard let self, let button = self.statusItem?.button else { return event }
+            // Check if the click is on our status bar button
+            let buttonFrame = button.window?.convertToScreen(button.convert(button.bounds, to: nil)) ?? .zero
+            if buttonFrame.contains(NSEvent.mouseLocation) {
+                self.showRightClickMenu()
+                return nil // swallow the event
+            }
+            return event
+        }
+    }
+
+    private func showRightClickMenu() {
+        guard let button = statusItem?.button else { return }
 
         let menu = NSMenu()
 
@@ -75,17 +93,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         quitItem.target = NSApp
         menu.addItem(quitItem)
 
-        statusItem.menu = menu
+        menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height), in: button)
     }
 
     private static func findStatusItem() -> NSStatusItem? {
-        // Try via windows first
         if let item = NSApp.windows
             .compactMap({ $0.value(forKey: "statusItem") as? NSStatusItem })
             .first {
             return item
         }
-        // Fallback: NSStatusBar private API
         return (NSStatusBar.system.value(forKey: "statusItems") as? [NSStatusItem])?.first
     }
 
