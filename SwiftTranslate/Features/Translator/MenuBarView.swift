@@ -36,7 +36,6 @@ struct MenuBarView: View {
 @available(macOS 15.0, *)
 struct TranslatorView: View {
     @Environment(AppState.self) private var state
-    @Environment(\.openWindow) private var openWindow
     @State private var showHistory = false
 
     var body: some View {
@@ -151,17 +150,6 @@ struct TranslatorView: View {
 
             // Bottom bar
             HStack(spacing: 8) {
-                // Open window
-                Button {
-                    openWindow(id: "translator")
-                    NSApp.activate(ignoringOtherApps: true)
-                } label: {
-                    Image(systemName: "macwindow")
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
-                .help(Text(L("window.open")))
-
                 // Open settings
                 SettingsLink {
                     Image(systemName: "gear")

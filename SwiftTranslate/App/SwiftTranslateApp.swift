@@ -21,18 +21,6 @@ struct SwiftTranslateApp: App {
         }
         .menuBarExtraStyle(.window)
 
-        Window(L("window.title"), id: "translator") {
-            ContentView()
-                .environment(state)
-        }
-        .defaultSize(width: 700, height: 420)
-        .windowResizability(.contentMinSize)
-        .commands {
-            CommandGroup(after: .appInfo) {
-                EmptyView()
-            }
-        }
-
         Settings {
             SettingsView()
                 .environment(state)
