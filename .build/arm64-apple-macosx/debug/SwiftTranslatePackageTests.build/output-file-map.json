@@ -1,0 +1,12 @@
+{
+  "": {
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslatePackageTests.build/master.swiftdeps"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslatePackageTests.derived/runner.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslatePackageTests.build/runner.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslatePackageTests.build/runner.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslatePackageTests.build/runner~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslatePackageTests.build/runner.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslatePackageTests.build/runner.dia"
+  }
+}

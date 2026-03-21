@@ -1,0 +1,110 @@
+{
+  "": {
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/master.swiftdeps"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/App/AppState.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/AppState.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/AppState.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/AppState~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/AppState.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/AppState.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/App/Localization.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/Localization.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/Localization.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/Localization~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/Localization.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/Localization.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/App/SwiftTranslateApp.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/SwiftTranslateApp.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/SwiftTranslateApp.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/SwiftTranslateApp~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/SwiftTranslateApp.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/SwiftTranslateApp.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/Core/Models.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/Models.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/Models.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/Models~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/Models.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/Models.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/Core/Persistence/HistoryStore.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HistoryStore.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HistoryStore.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HistoryStore~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HistoryStore.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HistoryStore.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/Core/Persistence/OnboardingStore.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/OnboardingStore.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/OnboardingStore.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/OnboardingStore~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/OnboardingStore.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/OnboardingStore.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/Core/Services/HotkeyManager.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HotkeyManager.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HotkeyManager.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HotkeyManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HotkeyManager.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HotkeyManager.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/Core/Services/LanguageDetector.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/LanguageDetector.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/LanguageDetector.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/LanguageDetector~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/LanguageDetector.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/LanguageDetector.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/Features/History/HistoryView.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HistoryView.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HistoryView.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HistoryView~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HistoryView.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/HistoryView.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/Features/Onboarding/OnboardingView.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/OnboardingView.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/OnboardingView.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/OnboardingView~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/OnboardingView.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/OnboardingView.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/Features/Settings/SettingsView.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/SettingsView.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/SettingsView.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/SettingsView~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/SettingsView.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/SettingsView.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/Features/Translator/ContentView.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/ContentView.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/ContentView.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/ContentView~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/ContentView.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/ContentView.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/Features/Translator/MenuBarView.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/MenuBarView.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/MenuBarView.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/MenuBarView~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/MenuBarView.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/MenuBarView.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslate/Features/Translator/MultilineTextField.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/MultilineTextField.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/MultilineTextField.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/MultilineTextField~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/MultilineTextField.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/MultilineTextField.dia"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/DerivedSources/resource_bundle_accessor.swift": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/resource_bundle_accessor.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/resource_bundle_accessor.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/resource_bundle_accessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/resource_bundle_accessor.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/debug/SwiftTranslate.build/resource_bundle_accessor.dia"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "": {
+    "dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/release/SwiftTranslateTests.build/SwiftTranslateTests.d",
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/release/SwiftTranslateTests.build/SwiftTranslateTests.o",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/release/SwiftTranslateTests.build/master.swiftdeps"
+  },
+  "/Users/I552575/Developer/SwiftTranslate/SwiftTranslateTests/SwiftTranslateTests.swift": {
+    "object": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/release/SwiftTranslateTests.build/SwiftTranslateTests.swift.o",
+    "swiftmodule": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/release/SwiftTranslateTests.build/SwiftTranslateTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/release/SwiftTranslateTests.build/SwiftTranslateTests.swiftdeps",
+    "diagnostics": "/Users/I552575/Developer/SwiftTranslate/.build/arm64-apple-macosx/release/SwiftTranslateTests.build/SwiftTranslateTests.dia"
+  }
+}
