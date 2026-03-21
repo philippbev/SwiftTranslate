@@ -10,9 +10,17 @@ struct MenuBarView: View {
             if state.onboardingCompleted {
                 TranslatorView()
                     .translationTask(state.translationConfig) { session in
+                        let text = state.sourceText.trimmingCharacters(in: .whitespacesAndNewlines)
+                        guard !text.isEmpty else {
+                            state.isTranslating = false
+                            state.translationConfig = nil
+                            return
+                        }
                         do {
-                            let r = try await session.translate(state.sourceText)
+                            let r = try await session.translate(text)
                             state.translationDidFinish(r.targetText)
+                        } catch is CancellationError {
+                            state.isTranslating = false
                         } catch {
                             state.translationDidFail(error)
                         }

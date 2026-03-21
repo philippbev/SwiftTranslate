@@ -118,6 +118,8 @@ struct ContentView: View {
             do {
                 let r = try await session.translate(text)
                 state.translationDidFinish(r.targetText)
+            } catch is CancellationError {
+                state.isTranslating = false
             } catch {
                 state.translationDidFail(error)
             }
