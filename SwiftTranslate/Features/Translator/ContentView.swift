@@ -148,6 +148,17 @@ struct ContentView: View {
                 Text(L("detected"))
                     .font(.caption2).foregroundStyle(.secondary)
             }
+            if isSource {
+                Button {
+                    state.sourceLangLocked.toggle()
+                } label: {
+                    Image(systemName: state.sourceLangLocked ? "lock.fill" : "lock.open")
+                        .font(.caption)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(state.sourceLangLocked ? .primary : .tertiary)
+                .help(state.sourceLangLocked ? L("lang.lock.on") : L("lang.lock.off"))
+            }
             Spacer()
         }
         .padding(.horizontal, 12)

@@ -49,6 +49,16 @@ struct TranslatorView: View {
                 }
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel(String(format: L("a11y.sourcelang"), displaySource.displayName))
+
+                Button {
+                    state.sourceLangLocked.toggle()
+                } label: {
+                    Image(systemName: state.sourceLangLocked ? "lock.fill" : "lock.open")
+                        .font(.caption)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(state.sourceLangLocked ? .primary : .tertiary)
+                .help(Text(state.sourceLangLocked ? L("lang.lock.on") : L("lang.lock.off")))
                 Spacer()
                 Button { state.swap() } label: {
                     Image(systemName: "arrow.left.arrow.right")

@@ -1,5 +1,7 @@
 // MARK: - MenuBarView
 "detected" = "detected";
+"lang.lock.off" = "Lock source language";
+"lang.lock.on" = "Unlock source language";
 "swap.languages" = "Swap languages";
 "window.title" = "SwiftTranslate";
 "window.open" = "Open Window…";

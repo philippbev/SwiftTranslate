@@ -39,6 +39,9 @@ final class AppState {
     var translationConfig: TranslationSession.Configuration? = nil
     var manualLanguageSwap = false
     var detectedLang: SupportedLanguage? = nil
+    var sourceLangLocked: Bool = UserDefaults.standard.bool(forKey: "sourceLangLocked") {
+        didSet { UserDefaults.standard.set(sourceLangLocked, forKey: "sourceLangLocked") }
+    }
 
     // MARK: Download state
     var downloadStatus: DownloadStatus = .idle
@@ -138,7 +141,7 @@ final class AppState {
         let text = sourceText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
 
-        if !manualLanguageSwap {
+        if !manualLanguageSwap && !sourceLangLocked {
             if let detected = detector.detect(text) {
                 sourceLang = detected
                 // Pick a sensible default target: prefer DE if source is EN, otherwise EN
@@ -164,7 +167,7 @@ final class AppState {
 
     /// Called while user types — debounced 300ms for detection, 800ms for auto-translate.
     func updateDetectedLang() {
-        guard !manualLanguageSwap else { detectedLang = nil; return }
+        guard !manualLanguageSwap && !sourceLangLocked else { detectedLang = nil; return }
 
         detectionDebounceTask?.cancel()
         detectionDebounceTask = Task {
