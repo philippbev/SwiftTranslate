@@ -106,3 +106,43 @@ struct AppStateSwapTests {
         }
     }
 }
+
+// MARK: - Translation Cache
+
+@Suite("AppState.cache")
+struct AppStateCacheTests {
+
+    @Test("Cache hit skips isTranslating")
+    @MainActor func cacheHitSkipsTranslating() {
+        if #available(macOS 15.0, *) {
+            let state = AppState()
+            state.sourceText = "Hello"
+            state.sourceLang = .english
+            state.targetLang = .german
+            // Simulate a finished translation to populate cache
+            state.translationDidFinish("Hallo")
+            // Now translate the same text again
+            state.sourceText = "Hello"
+            state.translate()
+            // Cache hit: translatedText set immediately, no spinner
+            #expect(state.translatedText == "Hallo")
+            #expect(state.isTranslating == false)
+        }
+    }
+
+    @Test("Clear wipes cache")
+    @MainActor func clearWipesCache() {
+        if #available(macOS 15.0, *) {
+            let state = AppState()
+            state.sourceText = "Hello"
+            state.sourceLang = .english
+            state.targetLang = .german
+            state.translationDidFinish("Hallo")
+            state.clear()
+            state.sourceText = "Hello"
+            state.translate()
+            // After clear, cache is gone — should start translating
+            #expect(state.isTranslating == true)
+        }
+    }
+}
