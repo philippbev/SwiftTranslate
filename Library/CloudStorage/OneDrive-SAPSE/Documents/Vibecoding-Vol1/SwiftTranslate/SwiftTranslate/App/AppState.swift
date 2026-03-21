@@ -166,16 +166,21 @@ final class AppState {
     func translate() {
         let text = sourceText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
+        // Block overlapping calls — a new request only starts once the current
+        // .translationTask session has fully resolved (isTranslating reset to false).
+        guard !isTranslating else { return }
 
-        // Cancel any in-flight translate task before starting a new one.
-        // Without this, multiple rapid calls spawn parallel Tasks that race
-        // to set translationConfig — the last writer wins but isTranslating
-        // can be left permanently true when an older Task overwrites a newer Config.
+        // Mark busy immediately so any further keystrokes / debounce firings are
+        // blocked above before we even hit the async suspension point.
+        isTranslating = true
+        errorMessage = nil
+
         activeTranslateTask?.cancel()
         activeTranslateTask = Task {
+            // Language detection (async — must check cancellation after)
             if !manualLanguageSwap && !sourceLangLocked {
                 if let detected = await detector.detect(text) {
-                    guard !Task.isCancelled else { return }
+                    guard !Task.isCancelled else { isTranslating = false; return }
                     sourceLang = detected
                     if !targetLangManuallySet && targetLang == detected {
                         targetLang = detected == .english ? .german : .english
@@ -183,14 +188,16 @@ final class AppState {
                     }
                 }
             }
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled else { isTranslating = false; return }
+
             detectedLang = nil
             manualLanguageSwap = false
-            errorMessage = nil
 
+            // Cache hit — no network/framework call needed
             let cacheKey = "\(sourceLang.id)>\(targetLang.id):\(text)"
             if let cached = translationCache[cacheKey] {
                 translatedText = cached
+                isTranslating = false
                 if copyResultToClipboard {
                     NSPasteboard.general.clearContents()
                     NSPasteboard.general.setString(cached, forType: .string)
@@ -205,7 +212,8 @@ final class AppState {
                 return
             }
 
-            isTranslating = true
+            // Fire SwiftUI's .translationTask by setting a fresh config.
+            // UUID bump ensures identity change even for identical language pairs.
             translationRequestID = UUID()
             translationConfig = TranslationSession.Configuration(
                 source: Locale.Language(identifier: sourceLang.localeIdentifier),
@@ -235,8 +243,10 @@ final class AppState {
             detectedLang = nil
         }
 
-        // Auto-translate: always runs if enabled, regardless of lock
-        guard autoTranslateWhileTyping, !sourceText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        // Auto-translate: only schedule if not already translating
+        guard autoTranslateWhileTyping,
+              !isTranslating,
+              !sourceText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         autoTranslateDebounceTask?.cancel()
         autoTranslateDebounceTask = Task {
             try? await Task.sleep(for: .milliseconds(800))
