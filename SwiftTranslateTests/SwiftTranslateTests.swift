@@ -33,6 +33,14 @@ struct HistoryStoreTests {
         s.add(HistoryEntry(source: "Hello", translation: "Hallo", from: .german, to: .english))
         #expect(s.entries.count == 2)
     }
+    @Test @MainActor func addAndClearReflectsInEntries() {
+        // Smoke test that add/clear round-trips correctly after iCloud refactor
+        let s = HistoryStore(); s.clear()
+        s.add(HistoryEntry(source: "Guten Morgen", translation: "Good morning", from: .german, to: .english))
+        #expect(s.entries.count == 1)
+        s.clear()
+        #expect(s.entries.isEmpty)
+    }
 }
 
 // MARK: - OnboardingStore
