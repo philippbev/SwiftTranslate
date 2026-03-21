@@ -61,6 +61,9 @@
 // MARK: - SettingsView
 "settings.shortcuts" = "Keyboard Shortcuts";
 "settings.shortcut.open" = "Open Translator";
+"settings.languages" = "Languages";
+"settings.sourcelang" = "Source Language";
+"settings.targetlang" = "Target Language";
 "settings.behavior" = "Behaviour";
 "settings.autopaste" = "Auto-translate on paste";
 "settings.autotyping" = "Auto-translate while typing";

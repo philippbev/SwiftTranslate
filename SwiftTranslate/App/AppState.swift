@@ -137,6 +137,7 @@ final class AppState {
         if !manualLanguageSwap {
             if let detected = detector.detect(text) {
                 sourceLang = detected
+                // Pick a sensible default target: prefer DE if source is EN, otherwise EN
                 targetLang = detected == .english ? .german : .english
             }
         }
@@ -144,7 +145,7 @@ final class AppState {
         manualLanguageSwap = false
         errorMessage = nil
 
-        let cacheKey = "\(sourceLang.rawValue)>\(targetLang.rawValue):\(text)"
+        let cacheKey = "\(sourceLang.id)>\(targetLang.id):\(text)"
         if let cached = translationCache[cacheKey] {
             translatedText = cached
             return
@@ -178,7 +179,7 @@ final class AppState {
     }
 
     func translationDidFinish(_ result: String) {
-        let cacheKey = "\(sourceLang.rawValue)>\(targetLang.rawValue):\(sourceText.trimmingCharacters(in: .whitespacesAndNewlines))"
+        let cacheKey = "\(sourceLang.id)>\(targetLang.id):\(sourceText.trimmingCharacters(in: .whitespacesAndNewlines))"
         translationCache[cacheKey] = result
         translatedText = result
         isTranslating = false
