@@ -50,9 +50,11 @@ final class AppState {
     var isTranslating = false
     var showCopied = false
     var errorMessage: String? = nil
-    var translationConfig: TranslationSession.Configuration? = nil
-    /// Bumped on every translate() call so .translationTask always sees a new identity.
+    var translationConfig: TranslationSession.Configuration? = nil  // download-prepare only
+    /// Bumped on every translate() call — .task(id:) in MenuBarView uses this as trigger.
     private(set) var translationRequestID = UUID()
+    /// Text to translate, set atomically with translationRequestID.
+    private(set) var pendingTranslationText = ""
     var manualLanguageSwap = false
     var detectedLang: SupportedLanguage? = nil
     var sourceLangLocked: Bool = UserDefaults.standard.bool(forKey: "sourceLangLocked") {
@@ -212,13 +214,12 @@ final class AppState {
                 return
             }
 
-            // Fire SwiftUI's .translationTask by setting a fresh config.
-            // UUID bump ensures identity change even for identical language pairs.
+            // Store text and bump UUID — .task(id: translationRequestID) in
+            // MenuBarView picks this up and runs the translation directly on
+            // the cached session, bypassing Apple's Configuration object caching.
+            pendingTranslationText = text
             translationRequestID = UUID()
-            translationConfig = TranslationSession.Configuration(
-                source: Locale.Language(identifier: sourceLang.localeIdentifier),
-                target: Locale.Language(identifier: targetLang.localeIdentifier)
-            )
+            translationConfig = nil
         }
     }
 
@@ -243,9 +244,9 @@ final class AppState {
             detectedLang = nil
         }
 
-        // Auto-translate: only schedule if not already translating
+        // Auto-translate: always schedule the debounce; translate() itself
+        // blocks overlapping calls via isTranslating.
         guard autoTranslateWhileTyping,
-              !isTranslating,
               !sourceText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         autoTranslateDebounceTask?.cancel()
         autoTranslateDebounceTask = Task {
@@ -256,7 +257,8 @@ final class AppState {
     }
 
     func translationDidFinish(_ result: String) {
-        let cacheKey = "\(sourceLang.id)>\(targetLang.id):\(sourceText.trimmingCharacters(in: .whitespacesAndNewlines))"
+        let finishedText = sourceText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cacheKey = "\(sourceLang.id)>\(targetLang.id):\(finishedText)"
         if translationCache.count >= translationCacheLimit { translationCache.removeAll() }
         translationCache[cacheKey] = result
         translatedText = result
@@ -277,17 +279,26 @@ final class AppState {
             from: sourceLang, to: targetLang
         ))
         manualLanguageSwap = false
-        // Do NOT touch translationConfig here — leave it as-is until the next
-        // translate() call overwrites it. Setting it to nil and then to a new value
-        // in the same Task can be batched into a single SwiftUI update where nil
-        // is never observed, causing .translationTask to not fire.
+
+        // If the user kept typing while we were translating, the debounce fired
+        // translate() but it was blocked by isTranslating. Now that we're free,
+        // re-trigger so the latest text gets translated.
+        if autoTranslateWhileTyping {
+            let latestText = sourceText.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !latestText.isEmpty && latestText != finishedText {
+                autoTranslateDebounceTask?.cancel()
+                autoTranslateDebounceTask = Task {
+                    try? await Task.sleep(for: .milliseconds(300))
+                    guard !Task.isCancelled else { return }
+                    translate()
+                }
+            }
+        }
     }
 
     func translationDidFail(_ error: Error) {
         errorMessage = error.localizedDescription
         isTranslating = false
-        // On failure, nil the config so the user can retry cleanly.
-        translationConfig = nil
     }
 
     func swap() {
@@ -309,9 +320,6 @@ final class AppState {
         isTranslating = false
         showCopied = false
         translationCache.removeAll()
-        invalidateTranslationConfig()
-        // Invalidate any in-flight translation so translationDidFinish/Fail is ignored
-        translationConfig = nil
     }
 
     // MARK: - Private
@@ -321,13 +329,7 @@ final class AppState {
         prepareConfigDeEn?.invalidate()
     }
 
-    private func invalidateTranslationConfig() {
-        translationConfig?.invalidate()
-    }
-
     // MARK: - Language Pack Verification
-
-    /// Checks that EN↔DE translation packs are installed. Resets onboarding if neither direction is available.
     func verifyLanguagePacks() async {
         let availability = LanguageAvailability()
         let enStatus = await availability.status(from: Locale.Language(identifier: "en"),

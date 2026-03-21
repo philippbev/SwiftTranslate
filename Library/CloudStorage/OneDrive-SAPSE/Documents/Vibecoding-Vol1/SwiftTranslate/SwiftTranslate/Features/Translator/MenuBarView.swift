@@ -4,21 +4,40 @@ import Translation
 @available(macOS 15.0, *)
 struct MenuBarView: View {
     @Environment(AppState.self) private var state
+    @State private var sessionEnDe: TranslationSession? = nil
+    @State private var sessionDeDe: TranslationSession? = nil
 
     var body: some View {
         Group {
             if state.onboardingCompleted {
                 TranslatorView()
-                    .translationTask(state.translationConfig) { @MainActor session in
-                        let text = state.sourceText.trimmingCharacters(in: .whitespacesAndNewlines)
-                        guard !text.isEmpty else {
+                    // Session EN→DE
+                    .translationTask(
+                        source: Locale.Language(identifier: "en"),
+                        target: Locale.Language(identifier: "de")
+                    ) { @MainActor session in
+                        self.sessionEnDe = session
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    // Session DE→EN
+                    .translationTask(
+                        source: Locale.Language(identifier: "de"),
+                        target: Locale.Language(identifier: "en")
+                    ) { @MainActor session in
+                        self.sessionDeDe = session
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    // Triggered on every new translation request
+                    .task(id: state.translationRequestID) { @MainActor in
+                        let text = state.pendingTranslationText
+                        guard !text.isEmpty else { return }
+                        let requestID = state.translationRequestID
+                        let sourceId = state.sourceLang.localeIdentifier
+                        let session = sourceId == "en" ? sessionEnDe : sessionDeDe
+                        guard let session else {
                             state.isTranslating = false
-                            state.translationConfig = nil
                             return
                         }
-                        // Capture the request ID at the time this task starts.
-                        // If a newer translate() call has already bumped the ID, discard this result.
-                        let requestID = state.translationRequestID
                         do {
                             let r = try await session.translate(text)
                             guard state.translationRequestID == requestID else {
@@ -28,7 +47,6 @@ struct MenuBarView: View {
                             state.translationDidFinish(r.targetText)
                         } catch is CancellationError {
                             state.isTranslating = false
-                            state.translationConfig = nil
                         } catch {
                             state.translationDidFail(error)
                         }

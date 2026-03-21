@@ -1,11 +1,10 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 5.9
 import PackageDescription
 
 let package = Package(
     name: "SwiftTranslate",
-    platforms: [
-        .macOS(.v15)
-    ],
+    defaultLocalization: "de",
+    platforms: [.macOS(.v14)],
     dependencies: [
         .package(url: "https://github.com/sindresorhus/KeyboardShortcuts", from: "2.2.0")
     ],
@@ -16,9 +15,10 @@ let package = Package(
                 .product(name: "KeyboardShortcuts", package: "KeyboardShortcuts")
             ],
             path: "SwiftTranslate",
-            swiftSettings: [
-                .swiftLanguageMode(.v5)
-            ]
+            resources: [
+                .process("Resources")
+            ],
+            linkerSettings: [.linkedFramework("Translation")]
         ),
         .testTarget(
             name: "SwiftTranslateTests",
