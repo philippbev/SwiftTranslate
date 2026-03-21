@@ -17,7 +17,7 @@ let package = Package(
             ],
             path: "SwiftTranslate",
             swiftSettings: [
-                .enableExperimentalFeature("StrictConcurrency")
+                .swiftLanguageMode(.v5)
             ]
         ),
         .testTarget(

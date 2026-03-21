@@ -1,5 +1,5 @@
 import Foundation
-import Translation
+@preconcurrency import Translation
 
 /// Wraps Apple's Translation framework.
 /// Translation must be triggered via SwiftUI's .translationTask modifier —
