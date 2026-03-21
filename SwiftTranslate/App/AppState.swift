@@ -42,7 +42,10 @@ final class AppState {
         // Only EN and DE are supported; fall back to German for any other stored value
         return (lang == .english || lang == .german) ? lang! : .german
     }() {
-        didSet { UserDefaults.standard.set(targetLang.id, forKey: "targetLang") }
+        didSet {
+            UserDefaults.standard.set(targetLang.id, forKey: "targetLang")
+            targetLangManuallySet = true
+        }
     }
     var isTranslating = false
     var showCopied = false
@@ -52,6 +55,9 @@ final class AppState {
     var detectedLang: SupportedLanguage? = nil
     var sourceLangLocked: Bool = UserDefaults.standard.bool(forKey: "sourceLangLocked") {
         didSet { UserDefaults.standard.set(sourceLangLocked, forKey: "sourceLangLocked") }
+    }
+    var targetLangManuallySet: Bool = UserDefaults.standard.bool(forKey: "targetLangManuallySet") {
+        didSet { UserDefaults.standard.set(targetLangManuallySet, forKey: "targetLangManuallySet") }
     }
 
     // MARK: Download state
@@ -161,9 +167,11 @@ final class AppState {
         if !manualLanguageSwap && !sourceLangLocked {
             if let detected = detector.detect(text) {
                 sourceLang = detected
-                // Only auto-set target if it would create an identity pair
-                if targetLang == detected {
+                // Only auto-set target if it would create an identity pair and user hasn't manually chosen it
+                if !targetLangManuallySet && targetLang == detected {
                     targetLang = detected == .english ? .german : .english
+                    // Reset flag: this was an automatic correction, not a manual choice
+                    targetLangManuallySet = false
                 }
             }
         }
@@ -261,6 +269,7 @@ final class AppState {
         Swift.swap(&sourceText, &translatedText)
         Swift.swap(&sourceLang, &targetLang)
         manualLanguageSwap = true
+        targetLangManuallySet = false
     }
 
     func clear() {
