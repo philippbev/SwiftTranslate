@@ -28,10 +28,20 @@ final class AppState {
     // MARK: Translation state
     var sourceText = ""
     var translatedText = ""
-    var sourceLang: SupportedLanguage = SupportedLanguage.from(id: UserDefaults.standard.string(forKey: "sourceLang") ?? "") ?? .english {
+    var sourceLang: SupportedLanguage = {
+        let stored = UserDefaults.standard.string(forKey: "sourceLang") ?? ""
+        let lang = SupportedLanguage.from(id: stored)
+        // Only EN and DE are supported; fall back to English for any other stored value
+        return (lang == .english || lang == .german) ? lang! : .english
+    }() {
         didSet { UserDefaults.standard.set(sourceLang.id, forKey: "sourceLang") }
     }
-    var targetLang: SupportedLanguage = SupportedLanguage.from(id: UserDefaults.standard.string(forKey: "targetLang") ?? "") ?? .german {
+    var targetLang: SupportedLanguage = {
+        let stored = UserDefaults.standard.string(forKey: "targetLang") ?? ""
+        let lang = SupportedLanguage.from(id: stored)
+        // Only EN and DE are supported; fall back to German for any other stored value
+        return (lang == .english || lang == .german) ? lang! : .german
+    }() {
         didSet { UserDefaults.standard.set(targetLang.id, forKey: "targetLang") }
     }
     var isTranslating = false
