@@ -164,43 +164,44 @@ final class AppState {
         let text = sourceText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
 
-        if !manualLanguageSwap && !sourceLangLocked {
-            if let detected = detector.detect(text) {
-                sourceLang = detected
-                // Only auto-set target if it would create an identity pair and user hasn't manually chosen it
-                if !targetLangManuallySet && targetLang == detected {
-                    targetLang = detected == .english ? .german : .english
-                    // Reset flag: this was an automatic correction, not a manual choice
-                    targetLangManuallySet = false
+        Task {
+            if !manualLanguageSwap && !sourceLangLocked {
+                if let detected = await detector.detect(text) {
+                    sourceLang = detected
+                    // Only auto-set target if it would create an identity pair and user hasn't manually chosen it
+                    if !targetLangManuallySet && targetLang == detected {
+                        targetLang = detected == .english ? .german : .english
+                        targetLangManuallySet = false
+                    }
                 }
             }
-        }
-        detectedLang = nil
-        manualLanguageSwap = false
-        errorMessage = nil
+            detectedLang = nil
+            manualLanguageSwap = false
+            errorMessage = nil
 
-        let cacheKey = "\(sourceLang.id)>\(targetLang.id):\(text)"
-        if let cached = translationCache[cacheKey] {
-            translatedText = cached
-            if copyResultToClipboard {
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(cached, forType: .string)
-                showCopied = true
-                copiedHideTask?.cancel()
-                copiedHideTask = Task {
-                    try? await Task.sleep(for: .seconds(2))
-                    guard !Task.isCancelled else { return }
-                    showCopied = false
+            let cacheKey = "\(sourceLang.id)>\(targetLang.id):\(text)"
+            if let cached = translationCache[cacheKey] {
+                translatedText = cached
+                if copyResultToClipboard {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(cached, forType: .string)
+                    showCopied = true
+                    copiedHideTask?.cancel()
+                    copiedHideTask = Task {
+                        try? await Task.sleep(for: .seconds(2))
+                        guard !Task.isCancelled else { return }
+                        showCopied = false
+                    }
                 }
+                return
             }
-            return
-        }
 
-        isTranslating = true
-        translationConfig = TranslationSession.Configuration(
-            source: Locale.Language(identifier: sourceLang.localeIdentifier),
-            target: Locale.Language(identifier: targetLang.localeIdentifier)
-        )
+            isTranslating = true
+            translationConfig = TranslationSession.Configuration(
+                source: Locale.Language(identifier: sourceLang.localeIdentifier),
+                target: Locale.Language(identifier: targetLang.localeIdentifier)
+            )
+        }
     }
 
     /// Called while user types — debounced 300ms for detection, 800ms for auto-translate.
@@ -218,7 +219,7 @@ final class AppState {
             detectionDebounceTask = Task {
                 try? await Task.sleep(for: .milliseconds(300))
                 guard !Task.isCancelled else { return }
-                detectedLang = detector.detect(sourceText)
+                detectedLang = await detector.detect(sourceText)
             }
         } else {
             detectedLang = nil
@@ -255,6 +256,7 @@ final class AppState {
             source: sourceText, translation: result,
             from: sourceLang, to: targetLang
         ))
+        manualLanguageSwap = false
         invalidateTranslationConfig()
     }
 
@@ -296,5 +298,19 @@ final class AppState {
 
     private func invalidateTranslationConfig() {
         translationConfig?.invalidate()
+    }
+
+    // MARK: - Language Pack Verification
+
+    /// Checks that EN↔DE translation packs are installed. Resets onboarding if neither direction is available.
+    func verifyLanguagePacks() async {
+        let availability = LanguageAvailability()
+        let enStatus = await availability.status(from: Locale.Language(identifier: "en"),
+                                                  to: Locale.Language(identifier: "de"))
+        let deStatus = await availability.status(from: Locale.Language(identifier: "de"),
+                                                  to: Locale.Language(identifier: "en"))
+        if enStatus != .installed && deStatus != .installed {
+            onboardingCompleted = false
+        }
     }
 }

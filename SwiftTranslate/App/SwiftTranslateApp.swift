@@ -34,6 +34,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.appState_ = state
         self.appState = state
 
+        // Verify language packs are still installed; re-trigger onboarding if not
+        Task { await state.verifyLanguagePacks() }
+
         // Build popover
         popover = NSPopover()
         popover.contentSize = NSSize(width: 340, height: 400)
