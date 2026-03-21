@@ -147,8 +147,10 @@ final class AppState {
         if !manualLanguageSwap && !sourceLangLocked {
             if let detected = detector.detect(text) {
                 sourceLang = detected
-                // Pick a sensible default target: prefer DE if source is EN, otherwise EN
-                targetLang = detected == .english ? .german : .english
+                // Only auto-set target if it would create an identity pair
+                if targetLang == detected {
+                    targetLang = detected == .english ? .german : .english
+                }
             }
         }
         detectedLang = nil
@@ -158,6 +160,17 @@ final class AppState {
         let cacheKey = "\(sourceLang.id)>\(targetLang.id):\(text)"
         if let cached = translationCache[cacheKey] {
             translatedText = cached
+            if copyResultToClipboard {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(cached, forType: .string)
+                showCopied = true
+                copiedHideTask?.cancel()
+                copiedHideTask = Task {
+                    try? await Task.sleep(for: .seconds(2))
+                    guard !Task.isCancelled else { return }
+                    showCopied = false
+                }
+            }
             return
         }
 

@@ -45,6 +45,12 @@ struct MultilineTextField: NSViewRepresentable {
         return sv
     }
 
+    static func dismantleNSView(_ sv: NSScrollView, coordinator: Coordinator) {
+        guard let tv = sv.documentView as? PlaceholderTextView else { return }
+        NotificationCenter.default.removeObserver(coordinator,
+            name: NSTextView.didChangeSelectionNotification, object: tv)
+    }
+
     func updateNSView(_ sv: NSScrollView, context: Context) {
         guard let tv = sv.documentView as? PlaceholderTextView else { return }
         tv.isEditable = isEditable

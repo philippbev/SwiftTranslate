@@ -5,13 +5,12 @@ import AppKit
 @available(macOS 15.0, *)
 @main
 struct SwiftTranslateApp: App {
-    @State private var state = AppState()
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
         Settings {
             SettingsView()
-                .environment(state)
+                .environment(appDelegate.appState_)
         }
     }
 }
@@ -21,11 +20,11 @@ struct SwiftTranslateApp: App {
 @available(macOS 15.0, *)
 class AppDelegate: NSObject, NSApplicationDelegate {
     weak var appState: AppState?
-    static weak var shared: AppDelegate!
+    static var shared: AppDelegate!
 
     private var statusItem: NSStatusItem!
     private var popover: NSPopover!
-    private var appState_: AppState!
+    private(set) var appState_: AppState!
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppDelegate.shared = self
