@@ -2,7 +2,6 @@ import SwiftUI
 import Observation
 
 /// Central app state — injected via @Environment throughout the app.
-@available(macOS 15.0, *)
 @Observable
 @MainActor
 final class AppState {

@@ -11,7 +11,6 @@ import Translation
 /// - We never call configuration.invalidate() — doing so prevents subsequent translations.
 /// - Serial execution: we cancel any pending continuation before storing a new one
 ///   so there is never more than one in-flight request.
-@available(macOS 15.0, *)
 @Observable
 @MainActor
 final class TranslationService {
