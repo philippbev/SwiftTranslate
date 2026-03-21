@@ -47,6 +47,7 @@ final class AppState {
     let detector: any LanguageDetecting
     let history: any HistoryStoring
     private var detectionDebounceTask: Task<Void, Never>?
+    private var translationCache: [String: String] = [:]
 
     // MARK: Settings
     var autoTranslateOnPaste: Bool = UserDefaults.standard.bool(forKey: "autoTranslateOnPaste") {
@@ -136,8 +137,15 @@ final class AppState {
         }
         detectedLang = nil
         manualLanguageSwap = false
-        isTranslating = true
         errorMessage = nil
+
+        let cacheKey = "\(sourceLang.rawValue)>\(targetLang.rawValue):\(text)"
+        if let cached = translationCache[cacheKey] {
+            translatedText = cached
+            return
+        }
+
+        isTranslating = true
         translationConfig = TranslationSession.Configuration(
             source: Locale.Language(identifier: sourceLang.localeIdentifier),
             target: Locale.Language(identifier: targetLang.localeIdentifier)
@@ -156,6 +164,8 @@ final class AppState {
     }
 
     func translationDidFinish(_ result: String) {
+        let cacheKey = "\(sourceLang.rawValue)>\(targetLang.rawValue):\(sourceText.trimmingCharacters(in: .whitespacesAndNewlines))"
+        translationCache[cacheKey] = result
         translatedText = result
         isTranslating = false
         if copyResultToClipboard {
@@ -185,6 +195,7 @@ final class AppState {
         sourceText = ""
         translatedText = ""
         errorMessage = nil
+        translationCache.removeAll()
     }
 
     // MARK: - Private
