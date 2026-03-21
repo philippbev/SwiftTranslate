@@ -35,6 +35,7 @@ final class AppState {
         didSet { UserDefaults.standard.set(targetLang.id, forKey: "targetLang") }
     }
     var isTranslating = false
+    var showCopied = false
     var errorMessage: String? = nil
     var translationConfig: TranslationSession.Configuration? = nil
     var manualLanguageSwap = false
@@ -55,6 +56,7 @@ final class AppState {
     let history: any HistoryStoring
     private var detectionDebounceTask: Task<Void, Never>?
     private var autoTranslateDebounceTask: Task<Void, Never>?
+    private var copiedHideTask: Task<Void, Never>?
     private var translationCache: [String: String] = [:]
 
     // MARK: Settings
@@ -204,6 +206,13 @@ final class AppState {
         if copyResultToClipboard {
             NSPasteboard.general.clearContents()
             NSPasteboard.general.setString(result, forType: .string)
+            showCopied = true
+            copiedHideTask?.cancel()
+            copiedHideTask = Task {
+                try? await Task.sleep(for: .seconds(2))
+                guard !Task.isCancelled else { return }
+                showCopied = false
+            }
         }
         history.add(HistoryEntry(
             source: sourceText, translation: result,
@@ -227,10 +236,12 @@ final class AppState {
     func clear() {
         detectionDebounceTask?.cancel()
         autoTranslateDebounceTask?.cancel()
+        copiedHideTask?.cancel()
         sourceText = ""
         translatedText = ""
         errorMessage = nil
         isTranslating = false
+        showCopied = false
         translationCache.removeAll()
         invalidateTranslationConfig()
     }
