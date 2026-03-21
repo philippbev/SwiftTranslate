@@ -74,6 +74,7 @@ final class AppState {
     let history: any HistoryStoring
     private var detectionDebounceTask: Task<Void, Never>?
     private var autoTranslateDebounceTask: Task<Void, Never>?
+    private var activeTranslateTask: Task<Void, Never>?
     private var copiedHideTask: Task<Void, Never>?
     private var translationCache: [String: String] = [:]
     private let translationCacheLimit = 50
@@ -166,17 +167,23 @@ final class AppState {
         let text = sourceText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
 
-        Task {
+        // Cancel any in-flight translate task before starting a new one.
+        // Without this, multiple rapid calls spawn parallel Tasks that race
+        // to set translationConfig — the last writer wins but isTranslating
+        // can be left permanently true when an older Task overwrites a newer Config.
+        activeTranslateTask?.cancel()
+        activeTranslateTask = Task {
             if !manualLanguageSwap && !sourceLangLocked {
                 if let detected = await detector.detect(text) {
+                    guard !Task.isCancelled else { return }
                     sourceLang = detected
-                    // Only auto-set target if it would create an identity pair and user hasn't manually chosen it
                     if !targetLangManuallySet && targetLang == detected {
                         targetLang = detected == .english ? .german : .english
                         targetLangManuallySet = false
                     }
                 }
             }
+            guard !Task.isCancelled else { return }
             detectedLang = nil
             manualLanguageSwap = false
             errorMessage = nil
@@ -199,9 +206,6 @@ final class AppState {
             }
 
             isTranslating = true
-            // Bump the request ID first — this guarantees a new UUID even if the
-            // language pair hasn't changed, so SwiftUI's .translationTask always
-            // receives a genuinely different Configuration object and fires.
             translationRequestID = UUID()
             translationConfig = TranslationSession.Configuration(
                 source: Locale.Language(identifier: sourceLang.localeIdentifier),
@@ -287,6 +291,7 @@ final class AppState {
     func clear() {
         detectionDebounceTask?.cancel()
         autoTranslateDebounceTask?.cancel()
+        activeTranslateTask?.cancel()
         copiedHideTask?.cancel()
         sourceText = ""
         translatedText = ""
