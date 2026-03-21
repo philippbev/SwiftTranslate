@@ -33,9 +33,10 @@ jobs:
 
           cp "$BIN" "$APP/Contents/MacOS/SwiftTranslate"
 
-          # Copy localised resources built by SPM
-          find .build/apple/Products/Release/SwiftTranslate_SwiftTranslate.bundle \
-               -name "*.lproj" -exec cp -R {} "$APP/Contents/Resources/" \; 2>/dev/null || true
+          # Copy SPM resource bundles into Contents/Resources (Bundle.module requires them here)
+          for bundle in .build/apple/Products/Release/*.bundle; do
+            [ -d "$bundle" ] && cp -R "$bundle" "$APP/Contents/Resources/"
+          done
 
           cat > "$APP/Contents/Info.plist" <<PLIST
           <?xml version="1.0" encoding="UTF-8"?>
