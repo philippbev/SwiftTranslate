@@ -21,10 +21,10 @@ jobs:
             -scheme SwiftTranslate \
             -configuration Release \
             -derivedDataPath build \
+            -destination "platform=macOS,arch=arm64" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=NO \
             build
 
       - name: Find .app
