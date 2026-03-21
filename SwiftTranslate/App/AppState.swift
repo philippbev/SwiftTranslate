@@ -211,10 +211,14 @@ final class AppState {
     }
 
     func clear() {
+        detectionDebounceTask?.cancel()
+        autoTranslateDebounceTask?.cancel()
         sourceText = ""
         translatedText = ""
         errorMessage = nil
+        isTranslating = false
         translationCache.removeAll()
+        invalidateTranslationConfig()
     }
 
     // MARK: - Private
