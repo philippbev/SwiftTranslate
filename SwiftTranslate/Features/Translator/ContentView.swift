@@ -5,7 +5,6 @@ import Translation
 struct ContentView: View {
     @Environment(AppState.self) private var state
 
-    // Persist split position across launches
     @SceneStorage("window.splitFraction") private var splitFraction: Double = 0.5
     @State private var showHistory = false
 
@@ -17,17 +16,22 @@ struct ContentView: View {
                 VStack(spacing: 0) {
                     paneHeader(lang: state.sourceLang, detected: state.detectedLang, isSource: true)
                     Divider()
-                    MultilineTextField(
-                        text: $state.sourceText,
-                        placeholder: L("input.placeholder"),
-                        isEditable: true,
-                        onPaste: {
-                            if state.autoTranslateOnPaste && !state.sourceText.isEmpty {
-                                state.translate()
-                            }
+                    ZStack(alignment: .topLeading) {
+                        if state.sourceText.isEmpty {
+                            Text(L("input.placeholder"))
+                                .foregroundStyle(.tertiary)
+                                .font(.system(size: 15))
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 8)
+                                .allowsHitTesting(false)
                         }
-                    )
-                    .accessibilityIdentifier("sourceTextField")
+                        TextEditor(text: $state.sourceText)
+                            .font(.system(size: 15))
+                            .scrollContentBackground(.hidden)
+                            .background(.clear)
+                            .accessibilityIdentifier("sourceTextField")
+                    }
+                    .padding(.horizontal, 9)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     Divider()
                     sourceFooter(state: state)
@@ -50,17 +54,24 @@ struct ContentView: View {
                     } else {
                         paneHeader(lang: state.targetLang, detected: nil, isSource: false)
                         Divider()
-                        ZStack {
-                            MultilineTextField(
-                                text: $state.translatedText,
-                                placeholder: L("output.placeholder"),
-                                isEditable: false
-                            )
-                            .accessibilityIdentifier("outputTextField")
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color(nsColor: .controlBackgroundColor).opacity(0.5))
+                        ZStack(alignment: .topLeading) {
+                            if state.translatedText.isEmpty && !state.isTranslating {
+                                Text(L("output.placeholder"))
+                                    .foregroundStyle(.tertiary)
+                                    .font(.system(size: 15))
+                                    .padding(.horizontal, 5)
+                                    .padding(.vertical, 8)
+                                    .allowsHitTesting(false)
+                            }
+                            TextEditor(text: .constant(state.translatedText))
+                                .font(.system(size: 15))
+                                .scrollContentBackground(.hidden)
+                                .background(Color(nsColor: .controlBackgroundColor).opacity(0.5))
+                                .accessibilityIdentifier("outputTextField")
                             if state.isTranslating { ProgressView() }
                         }
+                        .padding(.horizontal, 9)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         Divider()
                         targetFooter(state: state)
                     }
@@ -69,7 +80,6 @@ struct ContentView: View {
             }
         }
         .toolbar {
-            // Language pair display
             ToolbarItem(placement: .navigation) {
                 Text("\(state.sourceLang.flag) \(state.sourceLang.displayName)  →  \(state.targetLang.flag) \(state.targetLang.displayName)")
                     .font(.subheadline).fontWeight(.medium)
@@ -126,12 +136,6 @@ struct ContentView: View {
         }
         .onChange(of: state.sourceText) { _, _ in
             state.updateDetectedLang()
-        }
-        .onAppear {
-            // Give focus to the source text field when the window opens
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                NSApp.keyWindow?.makeFirstResponder(nil)
-            }
         }
         .alert(L("error.title"), isPresented: Binding(
             get: { state.errorMessage != nil },
