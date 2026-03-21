@@ -46,6 +46,7 @@ final class AppState {
     // MARK: Services
     let detector: any LanguageDetecting
     let history: any HistoryStoring
+    private var detectionDebounceTask: Task<Void, Never>?
 
     // MARK: Settings
     var autoTranslateOnPaste: Bool = UserDefaults.standard.bool(forKey: "autoTranslateOnPaste") {
@@ -143,10 +144,15 @@ final class AppState {
         )
     }
 
-    /// Called while user types — updates detected language live for UI feedback.
+    /// Called while user types — debounced 300ms to avoid running NLLanguageRecognizer on every keystroke.
     func updateDetectedLang() {
         guard !manualLanguageSwap else { detectedLang = nil; return }
-        detectedLang = detector.detect(sourceText)
+        detectionDebounceTask?.cancel()
+        detectionDebounceTask = Task {
+            try? await Task.sleep(for: .milliseconds(300))
+            guard !Task.isCancelled else { return }
+            detectedLang = detector.detect(sourceText)
+        }
     }
 
     func translationDidFinish(_ result: String) {
