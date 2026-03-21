@@ -167,15 +167,19 @@ final class AppState {
 
     /// Called while user types — debounced 300ms for detection, 800ms for auto-translate.
     func updateDetectedLang() {
-        guard !manualLanguageSwap && !sourceLangLocked else { detectedLang = nil; return }
-
-        detectionDebounceTask?.cancel()
-        detectionDebounceTask = Task {
-            try? await Task.sleep(for: .milliseconds(300))
-            guard !Task.isCancelled else { return }
-            detectedLang = detector.detect(sourceText)
+        // Language detection: skip if manually swapped or locked
+        if !manualLanguageSwap && !sourceLangLocked {
+            detectionDebounceTask?.cancel()
+            detectionDebounceTask = Task {
+                try? await Task.sleep(for: .milliseconds(300))
+                guard !Task.isCancelled else { return }
+                detectedLang = detector.detect(sourceText)
+            }
+        } else {
+            detectedLang = nil
         }
 
+        // Auto-translate: always runs if enabled, regardless of lock
         guard autoTranslateWhileTyping, !sourceText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         autoTranslateDebounceTask?.cancel()
         autoTranslateDebounceTask = Task {
