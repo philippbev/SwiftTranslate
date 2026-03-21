@@ -38,6 +38,9 @@ jobs:
             [ -d "$bundle" ] && cp -R "$bundle" "$APP/Contents/Resources/"
           done
 
+          # App icon
+          cp "SwiftTranslate/Resources/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
+
           cat > "$APP/Contents/Info.plist" <<PLIST
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
@@ -52,6 +55,8 @@ jobs:
             <string>SwiftTranslate</string>
             <key>CFBundleExecutable</key>
             <string>SwiftTranslate</string>
+            <key>CFBundleIconFile</key>
+            <string>AppIcon</string>
             <key>CFBundlePackageType</key>
             <string>APPL</string>
             <key>CFBundleVersion</key>
