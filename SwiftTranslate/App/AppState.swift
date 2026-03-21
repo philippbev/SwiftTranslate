@@ -247,6 +247,7 @@ final class AppState {
             source: sourceText, translation: result,
             from: sourceLang, to: targetLang
         ))
+        manualLanguageSwap = false
         invalidateTranslationConfig()
     }
 
