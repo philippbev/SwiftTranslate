@@ -45,6 +45,14 @@
 "tip.autocopy" = "Übersetzung wird **automatisch kopiert**";
 "onboarding.finish" = "Los geht's!";
 
+// MARK: - Accessibility
+"a11y.sourcelang" = "Quellsprache: %@";
+"a11y.targetlang" = "Zielsprache: %@";
+"a11y.swap.hint" = "Tauscht Quell- und Zielsprache";
+"a11y.charcount" = "%ld Zeichen eingegeben";
+"a11y.translate.hint" = "Übersetzt den eingegebenen Text";
+"a11y.history.hint" = "Tippen um diesen Eintrag wiederzuverwenden";
+
 // MARK: - HistoryView
 "history.empty" = "Kein Verlauf";
 

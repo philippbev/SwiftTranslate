@@ -48,6 +48,14 @@
 // MARK: - HistoryView
 "history.empty" = "No History";
 
+// MARK: - Accessibility
+"a11y.sourcelang" = "Source language: %@";
+"a11y.targetlang" = "Target language: %@";
+"a11y.swap.hint" = "Swaps source and target language";
+"a11y.charcount" = "%ld characters entered";
+"a11y.translate.hint" = "Translates the entered text";
+"a11y.history.hint" = "Tap to reuse this entry";
+
 // MARK: - SettingsView
 "settings.shortcuts" = "Keyboard Shortcuts";
 "settings.shortcut.open" = "Open Translator";
