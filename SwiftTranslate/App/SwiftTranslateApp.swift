@@ -9,8 +9,10 @@ struct SwiftTranslateApp: App {
 
     var body: some Scene {
         Settings {
-            SettingsView()
-                .environment(appDelegate.appState_)
+            if let state = appDelegate.appState_ {
+                SettingsView()
+                    .environment(state)
+            }
         }
     }
 }
