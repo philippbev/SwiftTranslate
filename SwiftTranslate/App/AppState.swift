@@ -58,6 +58,7 @@ final class AppState {
     private var autoTranslateDebounceTask: Task<Void, Never>?
     private var copiedHideTask: Task<Void, Never>?
     private var translationCache: [String: String] = [:]
+    private let translationCacheLimit = 50
 
     // MARK: Settings
     var autoTranslateOnPaste: Bool = UserDefaults.standard.bool(forKey: "autoTranslateOnPaste") {
@@ -200,6 +201,7 @@ final class AppState {
 
     func translationDidFinish(_ result: String) {
         let cacheKey = "\(sourceLang.id)>\(targetLang.id):\(sourceText.trimmingCharacters(in: .whitespacesAndNewlines))"
+        if translationCache.count >= translationCacheLimit { translationCache.removeAll() }
         translationCache[cacheKey] = result
         translatedText = result
         isTranslating = false
