@@ -105,9 +105,9 @@ private class RightClickTarget: NSObject {
             menu.addItem(settingsItem)
             menu.addItem(.separator())
             menu.addItem(quitItem)
-            statusItem?.menu = menu
-            statusItem?.button?.performClick(nil)
-            statusItem?.menu = nil
+            if let button = statusItem?.button {
+                menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height), in: button)
+            }
         } else {
             // Forward to MenuBarExtra's original handler
             if let action = originalAction {
@@ -120,20 +120,14 @@ private class RightClickTarget: NSObject {
         if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == "translator" }) {
             window.makeKeyAndOrderFront(nil)
         } else {
-            NSApp.sendAction(#selector(NSApplication.showWindow), to: nil, from: nil)
+            NSApp.sendAction(Selector(("showWindow:")), to: nil, from: nil)
         }
         NSApp.activate(ignoringOtherApps: true)
     }
 
     @objc private func openSettings() {
-        NSApp.sendAction(#selector(NSApplication.showSettingsWindow), to: nil, from: nil)
+        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
         NSApp.activate(ignoringOtherApps: true)
     }
 }
 
-// MARK: - Private API stubs for #selector compatibility
-
-private extension NSApplication {
-    @objc func showSettingsWindow() {}
-    @objc func showWindow() {}
-}
