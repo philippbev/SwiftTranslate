@@ -17,6 +17,8 @@ struct SwiftTranslateApp: App {
                         NSApp.activate(ignoringOtherApps: true)
                     }
                     appDelegate.appState = state
+                    // Setup after MenuBarExtra is fully loaded
+                    appDelegate.setupRightClickMenu()
                 }
         }
         .menuBarExtraStyle(.window)
@@ -43,66 +45,72 @@ struct SwiftTranslateApp: App {
 // MARK: - AppDelegate
 
 @available(macOS 15.0, *)
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, RightClickMenuDelegate {
     weak var appState: AppState?
-    private var eventMonitor: Any?
     private var statusItem: NSStatusItem?
+    private var clickHandler: StatusItemClickHandler?
 
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.setup()
-        }
-    }
-
-    private func setup() {
+    func setupRightClickMenu() {
         guard let item = Self.findStatusItem() else {
-            print("[AppDelegate] Could not find NSStatusItem")
+            print("[AppDelegate] NSStatusItem not found")
             return
         }
+        print("[AppDelegate] NSStatusItem found, setting up click handler")
         self.statusItem = item
 
-        // Listen for right-clicks globally on the status bar button
-        eventMonitor = NSEvent.addLocalMonitorForEvents(matching: [.rightMouseDown]) { [weak self] event in
-            guard let self, let button = self.statusItem?.button else { return event }
-            // Check if the click is on our status bar button
-            let buttonFrame = button.window?.convertToScreen(button.convert(button.bounds, to: nil)) ?? .zero
-            if buttonFrame.contains(NSEvent.mouseLocation) {
-                self.showRightClickMenu()
-                return nil // swallow the event
-            }
-            return event
-        }
-    }
+        let handler = StatusItemClickHandler(statusItem: item, delegate: self)
+        self.clickHandler = handler
 
-    private func showRightClickMenu() {
-        guard let button = statusItem?.button else { return }
-
-        let menu = NSMenu()
-
-        let windowItem = NSMenuItem(title: L("window.open"), action: #selector(openTranslatorWindow), keyEquivalent: "")
-        windowItem.target = self
-        menu.addItem(windowItem)
-
-        let settingsItem = NSMenuItem(title: "Einstellungen…", action: #selector(openSettingsWindow), keyEquivalent: "")
-        settingsItem.target = self
-        menu.addItem(settingsItem)
-
-        menu.addItem(.separator())
-
-        let quitItem = NSMenuItem(title: "SwiftTranslate beenden", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "")
-        quitItem.target = NSApp
-        menu.addItem(quitItem)
-
-        menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height), in: button)
+        item.button?.target = handler
+        item.button?.action = #selector(StatusItemClickHandler.handleClick(_:))
+        item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
     }
 
     private static func findStatusItem() -> NSStatusItem? {
+        // Method 1: via window's statusItem key
         if let item = NSApp.windows
             .compactMap({ $0.value(forKey: "statusItem") as? NSStatusItem })
             .first {
             return item
         }
-        return (NSStatusBar.system.value(forKey: "statusItems") as? [NSStatusItem])?.first
+        // Method 2: via NSStatusBar private API
+        if let items = NSStatusBar.system.value(forKey: "statusItems") as? [NSStatusItem],
+           let item = items.first {
+            return item
+        }
+        return nil
+    }
+
+    func showRightClickMenu(relativeTo button: NSStatusBarButton) {
+        let menu = NSMenu()
+
+        let windowItem = NSMenuItem(
+            title: L("window.open"),
+            action: #selector(openTranslatorWindow),
+            keyEquivalent: ""
+        )
+        windowItem.target = self
+        menu.addItem(windowItem)
+
+        let settingsItem = NSMenuItem(
+            title: "Einstellungen…",
+            action: #selector(openSettingsWindow),
+            keyEquivalent: ""
+        )
+        settingsItem.target = self
+        menu.addItem(settingsItem)
+
+        menu.addItem(.separator())
+
+        let quitItem = NSMenuItem(
+            title: "SwiftTranslate beenden",
+            action: #selector(NSApplication.terminate(_:)),
+            keyEquivalent: ""
+        )
+        quitItem.target = NSApp
+        menu.addItem(quitItem)
+
+        menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height), in: button)
     }
 
     @objc private func openTranslatorWindow() {
@@ -117,6 +125,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func openSettingsWindow() {
         NSApp.openSettings()
         NSApp.activate(ignoringOtherApps: true)
+    }
+}
+
+// MARK: - Click handler
+
+private protocol RightClickMenuDelegate: AnyObject {
+    func showRightClickMenu(relativeTo button: NSStatusBarButton)
+}
+
+private class StatusItemClickHandler: NSObject {
+    private weak var statusItem: NSStatusItem?
+    private weak var delegate: RightClickMenuDelegate?
+    private let originalTarget: AnyObject?
+    private let originalAction: Selector?
+
+    init(statusItem: NSStatusItem, delegate: RightClickMenuDelegate) {
+        self.statusItem = statusItem
+        self.delegate = delegate
+        self.originalTarget = statusItem.button?.target
+        self.originalAction = statusItem.button?.action
+    }
+
+    @objc func handleClick(_ sender: NSStatusBarButton) {
+        guard let event = NSApp.currentEvent else { return }
+        if event.type == .rightMouseUp {
+            delegate?.showRightClickMenu(relativeTo: sender)
+        } else {
+            if let action = originalAction, let target = originalTarget {
+                _ = target.perform(action, with: sender)
+            }
+        }
     }
 }
 
