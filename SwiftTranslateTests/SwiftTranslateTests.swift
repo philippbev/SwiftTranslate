@@ -8,10 +8,10 @@ import Foundation
 struct LanguageDetectorTests {
     let d = LanguageDetector()
 
-    @Test func detectsEnglish() { #expect(d.detect("The quick brown fox") == .english) }
-    @Test func detectsGerman() { #expect(d.detect("Der schnelle braune Fuchs") == .german) }
-    @Test func shortReturnsNil() { #expect(d.detect("Hi") == nil) }
-    @Test func emptyReturnsNil() { #expect(d.detect("") == nil) }
+    @Test func detectsEnglish() async { let r = await d.detect("The quick brown fox"); #expect(r == .english) }
+    @Test func detectsGerman() async { let r = await d.detect("Der schnelle braune Fuchs"); #expect(r == .german) }
+    @Test func shortReturnsNil() async { let r = await d.detect("Hi"); #expect(r == nil) }
+    @Test func emptyReturnsNil() async { let r = await d.detect(""); #expect(r == nil) }
 }
 
 // MARK: - HistoryStore
@@ -121,9 +121,9 @@ struct AppStateSwapTests {
 struct AppStateCacheTests {
 
     @Test("Cache hit skips isTranslating")
-    @MainActor func cacheHitSkipsTranslating() {
+    @MainActor func cacheHitSkipsTranslating() async {
         if #available(macOS 15.0, *) {
-            let state = AppState()
+            let state = AppState(detector: LanguageDetector())
             state.sourceText = "Hello"
             state.sourceLang = .english
             state.targetLang = .german
@@ -132,16 +132,18 @@ struct AppStateCacheTests {
             // Now translate the same text again
             state.sourceText = "Hello"
             state.translate()
-            // Cache hit: translatedText set immediately, no spinner
+            // Yield to let the internal Task execute
+            try? await Task.sleep(for: .milliseconds(50))
+            // Cache hit: translatedText set, no spinner
             #expect(state.translatedText == "Hallo")
             #expect(state.isTranslating == false)
         }
     }
 
     @Test("Clear wipes cache")
-    @MainActor func clearWipesCache() {
+    @MainActor func clearWipesCache() async {
         if #available(macOS 15.0, *) {
-            let state = AppState()
+            let state = AppState(detector: LanguageDetector())
             state.sourceText = "Hello"
             state.sourceLang = .english
             state.targetLang = .german
@@ -149,6 +151,8 @@ struct AppStateCacheTests {
             state.clear()
             state.sourceText = "Hello"
             state.translate()
+            // Yield to let the internal Task execute
+            try? await Task.sleep(for: .milliseconds(50))
             // After clear, cache is gone — should start translating
             #expect(state.isTranslating == true)
         }
