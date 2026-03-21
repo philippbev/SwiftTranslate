@@ -10,10 +10,7 @@ struct LanguageDetector: LanguageDetecting {
         guard text.count > 3 else { return nil }
         let recognizer = NLLanguageRecognizer()
         recognizer.processString(text)
-        switch recognizer.dominantLanguage {
-        case .english: return .english
-        case .german: return .german
-        default: return nil
-        }
+        guard let dominant = recognizer.dominantLanguage else { return nil }
+        return SupportedLanguage.from(id: dominant.rawValue)
     }
 }

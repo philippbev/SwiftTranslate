@@ -1,24 +1,26 @@
 import Foundation
 
-enum SupportedLanguage: String, CaseIterable, Identifiable, Codable {
-    case english = "en"
-    case german = "de"
+struct SupportedLanguage: Identifiable, Codable, Equatable, Hashable {
+    let id: String          // BCP-47 locale identifier, e.g. "en", "de"
+    let displayName: String
+    let flag: String
 
-    var id: String { rawValue }
-    var localeIdentifier: String { rawValue }
+    var localeIdentifier: String { id }
 
-    var displayName: String {
-        switch self {
-        case .english: return "English"
-        case .german: return "Deutsch"
-        }
-    }
+    // MARK: - Registry
 
-    var flag: String {
-        switch self {
-        case .english: return "🇬🇧"
-        case .german: return "🇩🇪"
-        }
+    static let english  = SupportedLanguage(id: "en", displayName: "English",   flag: "🇬🇧")
+    static let german   = SupportedLanguage(id: "de", displayName: "Deutsch",   flag: "🇩🇪")
+    static let french   = SupportedLanguage(id: "fr", displayName: "Français",  flag: "🇫🇷")
+    static let spanish  = SupportedLanguage(id: "es", displayName: "Español",   flag: "🇪🇸")
+    static let italian  = SupportedLanguage(id: "it", displayName: "Italiano",  flag: "🇮🇹")
+
+    /// All languages available for translation.
+    static let all: [SupportedLanguage] = [.english, .german, .french, .spanish, .italian]
+
+    /// Look up by locale identifier — used for Codable decoding and LanguageDetector mapping.
+    static func from(id: String) -> SupportedLanguage? {
+        all.first { $0.id == id }
     }
 }
 

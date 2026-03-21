@@ -58,7 +58,7 @@ final class HistoryStore: HistoryStoring {
         var seen = Set<String>()
         let combined = (local + cloud).sorted { $0.date > $1.date }
         return combined.filter { entry in
-            let key = "\(entry.source)|\(entry.from.rawValue)|\(entry.to.rawValue)"
+            let key = "\(entry.source)|\(entry.from.id)|\(entry.to.id)"
             return seen.insert(key).inserted
         }.prefix(maxEntries).map { $0 }
     }
