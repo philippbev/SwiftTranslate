@@ -53,6 +53,7 @@
 "settings.shortcut.open" = "Open Translator";
 "settings.behavior" = "Behaviour";
 "settings.autopaste" = "Auto-translate on paste";
+"settings.autotyping" = "Auto-translate while typing";
 "settings.copyclipboard" = "Copy translation to clipboard";
 "settings.history" = "History";
 "settings.history.entries" = "Entries";

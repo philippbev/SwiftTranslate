@@ -47,11 +47,16 @@ final class AppState {
     let detector: any LanguageDetecting
     let history: any HistoryStoring
     private var detectionDebounceTask: Task<Void, Never>?
+    private var autoTranslateDebounceTask: Task<Void, Never>?
     private var translationCache: [String: String] = [:]
 
     // MARK: Settings
     var autoTranslateOnPaste: Bool = UserDefaults.standard.bool(forKey: "autoTranslateOnPaste") {
         didSet { UserDefaults.standard.set(autoTranslateOnPaste, forKey: "autoTranslateOnPaste") }
+    }
+
+    var autoTranslateWhileTyping: Bool = UserDefaults.standard.bool(forKey: "autoTranslateWhileTyping") {
+        didSet { UserDefaults.standard.set(autoTranslateWhileTyping, forKey: "autoTranslateWhileTyping") }
     }
 
     var copyResultToClipboard: Bool = {
@@ -152,14 +157,23 @@ final class AppState {
         )
     }
 
-    /// Called while user types — debounced 300ms to avoid running NLLanguageRecognizer on every keystroke.
+    /// Called while user types — debounced 300ms for detection, 800ms for auto-translate.
     func updateDetectedLang() {
         guard !manualLanguageSwap else { detectedLang = nil; return }
+
         detectionDebounceTask?.cancel()
         detectionDebounceTask = Task {
             try? await Task.sleep(for: .milliseconds(300))
             guard !Task.isCancelled else { return }
             detectedLang = detector.detect(sourceText)
+        }
+
+        guard autoTranslateWhileTyping, !sourceText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        autoTranslateDebounceTask?.cancel()
+        autoTranslateDebounceTask = Task {
+            try? await Task.sleep(for: .milliseconds(800))
+            guard !Task.isCancelled else { return }
+            translate()
         }
     }
 

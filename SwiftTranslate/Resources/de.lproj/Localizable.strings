@@ -53,6 +53,7 @@
 "settings.shortcut.open" = "Translator öffnen";
 "settings.behavior" = "Verhalten";
 "settings.autopaste" = "Automatisch übersetzen beim Einfügen";
+"settings.autotyping" = "Automatisch übersetzen beim Tippen";
 "settings.copyclipboard" = "Übersetzung in Zwischenablage kopieren";
 "settings.history" = "Verlauf";
 "settings.history.entries" = "Einträge";

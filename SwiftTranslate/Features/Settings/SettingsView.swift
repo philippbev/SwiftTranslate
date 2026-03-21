@@ -20,6 +20,12 @@ struct SettingsView: View {
                     Text(L("settings.autopaste"))
                 }
                 Toggle(isOn: Binding(
+                    get: { state.autoTranslateWhileTyping },
+                    set: { state.autoTranslateWhileTyping = $0 }
+                )) {
+                    Text(L("settings.autotyping"))
+                }
+                Toggle(isOn: Binding(
                     get: { state.copyResultToClipboard },
                     set: { state.copyResultToClipboard = $0 }
                 )) {
@@ -42,6 +48,6 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 380, height: 300)
+        .frame(width: 380, height: 340)
     }
 }
