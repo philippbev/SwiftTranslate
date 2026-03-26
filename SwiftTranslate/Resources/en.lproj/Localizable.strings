@@ -17,6 +17,7 @@
 "history.clear.all" = "Clear all";
 "error.title" = "Error";
 "error.translation.failed" = "Translation failed. Please try again.";
+"error.pack.missing" = "Language pack not installed. Download it in Settings → Language Packs.";
 "ok" = "OK";
 
 // MARK: - OnboardingView

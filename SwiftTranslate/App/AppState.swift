@@ -350,6 +350,11 @@ final class AppState {
         isTranslating = false
     }
 
+    func translationDidFailWithPackMissing() {
+        errorMessage = L("error.pack.missing")
+        isTranslating = false
+    }
+
     func swap() {
         guard !isTranslating else { return }
         // Only swap if the reverse pair is also supported

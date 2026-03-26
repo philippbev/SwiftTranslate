@@ -131,9 +131,23 @@ struct MenuBarView: View {
                         guard !text.isEmpty else { return }
                         let requestID = state.translationRequestID
                         let sessionKey = "\(state.sourceLang.id)>\(state.targetLang.id)"
-                        guard let session = sessionPool[sessionKey] else {
-                            state.isTranslating = false
+
+                        // Wait up to 3 seconds for the session to appear (covers startup race)
+                        var session: TranslationSession? = sessionPool[sessionKey]
+                        if session == nil {
+                            for _ in 0..<30 {
+                                try? await Task.sleep(for: .milliseconds(100))
+                                guard !Task.isCancelled else { state.isTranslating = false; return }
+                                if let s = sessionPool[sessionKey] { session = s; break }
+                            }
+                        }
+
+                        guard let session else {
+                            state.translationDidFailWithPackMissing()
                             return
+                        }
+                        guard state.translationRequestID == requestID else {
+                            state.isTranslating = false; return
                         }
                         do {
                             let r = try await session.translate(text)

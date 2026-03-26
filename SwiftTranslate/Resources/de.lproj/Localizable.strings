@@ -17,6 +17,7 @@
 "history.clear.all" = "Alle löschen";
 "error.title" = "Fehler";
 "error.translation.failed" = "Übersetzung fehlgeschlagen. Bitte erneut versuchen.";
+"error.pack.missing" = "Sprachpaket nicht installiert. In Einstellungen → Sprachpakete herunterladen.";
 "ok" = "OK";
 
 // MARK: - OnboardingView

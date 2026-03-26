@@ -111,7 +111,7 @@ private struct LanguagePacksSection: View {
     }()
 
     var body: some View {
-        ForEach(displayPairs, id: \.source.id) { (_, target) in
+        ForEach(displayPairs, id: \.target.id) { (_, target) in
             LangPackRow(target: target)
         }
     }
