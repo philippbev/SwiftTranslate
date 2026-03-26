@@ -5,3 +5,7 @@ import Foundation
 func L(_ key: String) -> String {
     NSLocalizedString(key, bundle: .module, comment: "")
 }
+
+/// App version — single source of truth.
+/// Bundle.main.infoDictionary is unavailable in SPM debug builds.
+let appVersion = "1.0.0"

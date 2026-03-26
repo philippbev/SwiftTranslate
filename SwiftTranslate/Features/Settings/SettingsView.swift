@@ -78,9 +78,8 @@ struct SettingsView: View {
                 }
             }
 
-            let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
             Section {
-                Text("v\(version) — Philipp Bevier")
+                Text("v\(appVersion) — Philipp Bevier")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
