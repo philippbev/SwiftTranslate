@@ -44,11 +44,11 @@ final class AppState {
     }() {
         didSet {
             UserDefaults.standard.set(sourceLang.id, forKey: "sourceLang")
-            // If current target is no longer valid for new source, auto-pick best target
             if !SupportedLanguage.supportedPairs.contains(LangPair(sourceLang.id, targetLang.id)) {
                 targetLang = SupportedLanguage.validTargets(for: sourceLang).first ?? .german
                 targetLangManuallySet = false
             }
+            refreshSessionConfig()
         }
     }
     var targetLang: SupportedLanguage = {
@@ -59,17 +59,21 @@ final class AppState {
         didSet {
             UserDefaults.standard.set(targetLang.id, forKey: "targetLang")
             targetLangManuallySet = true
+            refreshSessionConfig()
         }
     }
     var isTranslating = false
     var showCopied = false
     var errorMessage: String? = nil
     var translationConfig: TranslationSession.Configuration? = nil  // download-prepare only
-    /// Active session config — set by translate(), drives .translationTask in MenuBarView.
-    var activeSessionConfig: TranslationSession.Configuration? = nil
-    /// Snapshot of the text being translated — read by MenuBarView's translationTask closure.
+    /// Live session config for the current source→target pair — drives .translationTask in MenuBarView.
+    /// Updated whenever sourceLang or targetLang changes so the session is recreated.
+    private(set) var sessionConfig: TranslationSession.Configuration
+    /// Bumped on every translate() call — .task(id:) in MenuBarView uses this as trigger.
+    private(set) var translationRequestID = UUID()
+    /// Text to translate, set atomically with translationRequestID.
     private(set) var pendingTranslationText = ""
-    /// Snapshot of the request's language pair — used to validate result on return.
+    /// Snapshot of the language pair at request time.
     private(set) var pendingSourceLang: SupportedLanguage = .english
     private(set) var pendingTargetLang: SupportedLanguage = .german
     var manualLanguageSwap = false
@@ -139,6 +143,20 @@ final class AppState {
          history: (any HistoryStoring)? = nil) {
         self.detector = detector
         self.history = history ?? HistoryStore()
+        // Initialise sessionConfig for the stored source/target pair.
+        let src = UserDefaults.standard.string(forKey: "sourceLang") ?? "en"
+        let tgt = UserDefaults.standard.string(forKey: "targetLang") ?? "de"
+        self.sessionConfig = TranslationSession.Configuration(
+            source: Locale.Language(identifier: src),
+            target: Locale.Language(identifier: tgt)
+        )
+    }
+
+    private func refreshSessionConfig() {
+        sessionConfig = TranslationSession.Configuration(
+            source: Locale.Language(identifier: sourceLang.id),
+            target: Locale.Language(identifier: targetLang.id)
+        )
     }
 
     // MARK: - Download
@@ -272,12 +290,7 @@ final class AppState {
             pendingTranslationText = text
             pendingSourceLang = sourceLang
             pendingTargetLang = targetLang
-            // Setting activeSessionConfig triggers the .translationTask modifier in MenuBarView,
-            // which runs the translation on Apple's cached session for this language pair.
-            activeSessionConfig = TranslationSession.Configuration(
-                source: Locale.Language(identifier: sourceLang.id),
-                target: Locale.Language(identifier: targetLang.id)
-            )
+            translationRequestID = UUID()
             translationConfig = nil
         }
     }
@@ -315,8 +328,7 @@ final class AppState {
     }
 
     func translationDidFinish(_ result: String) {
-        let finishedText = pendingTranslationText
-        let cacheKey = "\(pendingSourceLang.id)>\(pendingTargetLang.id):\(finishedText)"
+        let cacheKey = "\(pendingSourceLang.id)>\(pendingTargetLang.id):\(pendingTranslationText)"
         if translationCache.count >= translationCacheLimit,
            let oldest = translationCacheOrder.first {
             translationCache.removeValue(forKey: oldest)
@@ -326,8 +338,6 @@ final class AppState {
         translationCacheOrder.append(cacheKey)
         translatedText = result
         isTranslating = false
-        activeSessionConfig?.invalidate()
-        activeSessionConfig = nil
         if copyResultToClipboard {
             writeToClipboard(result)
             showCopied = true
@@ -346,7 +356,7 @@ final class AppState {
 
         if autoTranslateWhileTyping {
             let latestText = sourceText.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !latestText.isEmpty && latestText != finishedText {
+            if !latestText.isEmpty && latestText != pendingTranslationText {
                 autoTranslateDebounceTask?.cancel()
                 autoTranslateDebounceTask = Task {
                     try? await Task.sleep(for: .milliseconds(AppState.retriggerDebounceMs))
@@ -360,15 +370,11 @@ final class AppState {
     func translationDidFail(_ error: Error) {
         errorMessage = userFacingMessage(for: error)
         isTranslating = false
-        activeSessionConfig?.invalidate()
-        activeSessionConfig = nil
     }
 
     func translationDidFailWithPackMissing() {
         errorMessage = L("error.pack.missing")
         isTranslating = false
-        activeSessionConfig?.invalidate()
-        activeSessionConfig = nil
     }
 
     func swap() {
@@ -391,8 +397,6 @@ final class AppState {
         errorMessage = nil
         isTranslating = false
         showCopied = false
-        activeSessionConfig?.invalidate()
-        activeSessionConfig = nil
         translationCache.removeAll()
         translationCacheOrder.removeAll()
     }

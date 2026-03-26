@@ -4,19 +4,32 @@ import Translation
 @available(macOS 15.0, *)
 struct MenuBarView: View {
     @Environment(AppState.self) private var state
+    @State private var session: TranslationSession? = nil
 
     var body: some View {
         Group {
             if state.onboardingCompleted {
                 TranslatorView()
-                    // Single active session, driven by state.activeSessionConfig.
-                    // AppState swaps the config on language change; the framework
-                    // reuses the cached session for already-installed pairs.
-                    .translationTask(state.activeSessionConfig) { @MainActor session in
+                    // Keeps a live session for the current source→target pair.
+                    // Recreated whenever the language pair changes via state.sessionConfig.
+                    .translationTask(state.sessionConfig) { @MainActor s in
+                        self.session = s
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    // Fires on every translate() call.
+                    .task(id: state.translationRequestID) { @MainActor in
+                        let text = state.pendingTranslationText
+                        guard !text.isEmpty else { return }
+                        let requestID = state.translationRequestID
+                        guard let session else {
+                            state.translationDidFailWithPackMissing()
+                            return
+                        }
                         do {
-                            let text = state.pendingTranslationText
-                            guard !text.isEmpty else { return }
                             let r = try await session.translate(text)
+                            guard state.translationRequestID == requestID else {
+                                state.isTranslating = false; return
+                            }
                             state.translationDidFinish(r.targetText)
                         } catch is CancellationError {
                             state.isTranslating = false
@@ -88,8 +101,8 @@ private struct LanguageBar: View {
         HStack(spacing: 6) {
             // Source language picker
             Menu {
-                let validSources = SupportedLanguage.all.filter { lang in
-                    !SupportedLanguage.validTargets(for: lang).isEmpty
+                let validSources = SupportedLanguage.all.filter {
+                    !SupportedLanguage.validTargets(for: $0).isEmpty
                 }
                 ForEach(validSources) { lang in
                     Button {
@@ -121,14 +134,16 @@ private struct LanguageBar: View {
             }
             .menuStyle(.borderlessButton)
             .fixedSize()
-            .accessibilityLabel(String(format: L("a11y.sourcelang"), (state.detectedLang ?? state.sourceLang).displayName))
+            .accessibilityLabel(String(format: L("a11y.sourcelang"),
+                                       (state.detectedLang ?? state.sourceLang).displayName))
 
             Button {
                 state.sourceLangLocked.toggle()
             } label: {
                 Image(systemName: state.sourceLangLocked ? "lock.fill" : "lock.open")
                     .font(.caption)
-                    .foregroundStyle(state.sourceLangLocked ? Color.accentColor : Color.secondary.opacity(0.4))
+                    .foregroundStyle(state.sourceLangLocked
+                                     ? Color.accentColor : Color.secondary.opacity(0.4))
             }
             .buttonStyle(.plain)
             .help(Text(state.sourceLangLocked ? L("lang.lock.on") : L("lang.lock.off")))
@@ -153,8 +168,7 @@ private struct LanguageBar: View {
 
             // Target language picker
             Menu {
-                let validTargets = SupportedLanguage.validTargets(for: state.sourceLang)
-                ForEach(validTargets) { lang in
+                ForEach(SupportedLanguage.validTargets(for: state.sourceLang)) { lang in
                     Button {
                         state.targetLang = lang
                     } label: {
@@ -190,7 +204,6 @@ private struct InputOutputArea: View {
         @Bindable var state = state
 
         VStack(spacing: 0) {
-            // Input field
             ZStack(alignment: .bottomTrailing) {
                 MultilineTextField(
                     text: $state.sourceText,
@@ -210,7 +223,7 @@ private struct InputOutputArea: View {
                     Text("\(count) / \(limit)")
                         .font(.caption2.monospacedDigit())
                         .foregroundStyle(
-                            count > limit - 200 ? Color.red :
+                            count > limit - 200  ? Color.red :
                             count > limit - 1000 ? Color.orange :
                             Color.secondary.opacity(0.5)
                         )
@@ -223,7 +236,6 @@ private struct InputOutputArea: View {
 
             Divider()
 
-            // Output field
             ZStack {
                 MultilineTextField(
                     text: $state.translatedText,
@@ -234,8 +246,7 @@ private struct InputOutputArea: View {
                 .background(Color(nsColor: .windowBackgroundColor))
 
                 if state.isTranslating {
-                    ProgressView()
-                        .scaleEffect(0.8)
+                    ProgressView().scaleEffect(0.8)
                 }
             }
             .background(Color(nsColor: .windowBackgroundColor))
@@ -252,30 +263,22 @@ private struct BottomBar: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            // Settings
             SettingsLink {
-                Image(systemName: "gear")
-                    .font(.callout)
+                Image(systemName: "gear").font(.callout)
             }
             .buttonStyle(.plain)
             .foregroundStyle(.secondary)
             .help(Text(L("settings")))
 
-            // Quit
-            Button {
-                NSApp.terminate(nil)
-            } label: {
-                Image(systemName: "power")
-                    .font(.callout)
+            Button { NSApp.terminate(nil) } label: {
+                Image(systemName: "power").font(.callout)
             }
             .buttonStyle(.plain)
             .foregroundStyle(.secondary)
             .help(Text(L("quit")))
 
-            Divider()
-                .frame(height: 14)
+            Divider().frame(height: 14)
 
-            // History toggle
             Button {
                 withAnimation(.easeInOut(duration: 0.2)) { showHistory.toggle() }
             } label: {
@@ -292,20 +295,13 @@ private struct BottomBar: View {
 
             if showHistory {
                 Text(String(format: L("history.entries %lld"), state.history.entries.count))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
+                    .font(.caption).foregroundStyle(.secondary)
                 Spacer()
-
                 if !state.history.entries.isEmpty {
-                    Button {
-                        state.history.clear()
-                    } label: {
-                        Text(L("history.clear.all"))
-                            .font(.callout)
+                    Button { state.history.clear() } label: {
+                        Text(L("history.clear.all")).font(.callout)
                     }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.red)
+                    .buttonStyle(.plain).foregroundStyle(.red)
                 }
             } else {
                 if state.showCopied {
@@ -314,29 +310,21 @@ private struct BottomBar: View {
                         .font(.caption)
                         .transition(.opacity.combined(with: .scale(scale: 0.9)))
                 }
-
                 Spacer()
-
-                Button {
-                    state.clear()
-                } label: {
-                    Image(systemName: "xmark.circle")
-                        .font(.callout)
+                Button { state.clear() } label: {
+                    Image(systemName: "xmark.circle").font(.callout)
                 }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
+                .buttonStyle(.plain).foregroundStyle(.secondary)
                 .help(Text(L("clear")))
                 .accessibilityLabel(L("clear"))
                 .disabled(state.sourceText.isEmpty && state.translatedText.isEmpty)
 
-                Button(L("translate")) {
-                    state.translate()
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
-                .keyboardShortcut(.return, modifiers: .command)
-                .accessibilityHint(L("a11y.translate.hint"))
-                .disabled(state.sourceText.isEmpty || state.isTranslating)
+                Button(L("translate")) { state.translate() }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.small)
+                    .keyboardShortcut(.return, modifiers: .command)
+                    .accessibilityHint(L("a11y.translate.hint"))
+                    .disabled(state.sourceText.isEmpty || state.isTranslating)
             }
         }
         .padding(.horizontal, 12)
