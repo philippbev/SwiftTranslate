@@ -18,14 +18,13 @@
 "error.title" = "Fehler";
 "error.translation.failed" = "Übersetzung fehlgeschlagen. Bitte erneut versuchen.";
 "ok" = "OK";
-"char.count %lld" = "%lld / 500";
 
 // MARK: - OnboardingView
-"onboarding.welcome.subtitle" = "Schnelle EN ↔ DE Übersetzung\ndirekt aus der Menüleiste.";
+"onboarding.welcome.subtitle" = "Schnelle Offline-Übersetzung\ndirekt aus der Menüleiste.";
 "feature.offline.title" = "Offline-Übersetzung";
 "feature.offline.subtitle" = "Kein Account, kein Internet nötig.";
 "feature.autodetect.title" = "Auto-Spracherkennung";
-"feature.autodetect.subtitle" = "EN und DE werden automatisch erkannt.";
+"feature.autodetect.subtitle" = "Quellsprache wird automatisch erkannt.";
 "feature.autocopy.title" = "Auto-Copy";
 "feature.autocopy.subtitle" = "Übersetzung direkt in die Zwischenablage.";
 "feature.hotkey.title" = "Globaler Hotkey ⌥⇧T";
@@ -33,13 +32,9 @@
 "onboarding.continue" = "Weiter";
 "download.title" = "Sprachpakete laden";
 "download.subtitle" = "Einmalig erforderlich für Offline-Übersetzung.";
-"download.package.english" = "Englisches Sprachpaket";
-"download.package.german" = "Deutsches Sprachpaket";
 "download.failed" = "Download fehlgeschlagen";
 "download.size.hint" = "ca. 150–300 MB je Paket · nur beim ersten Start";
 "download.checking" = "Verfügbarkeit wird geprüft…";
-"download.progress.english" = "Englisches Paket wird geladen…";
-"download.progress.german" = "Deutsches Paket wird geladen…";
 "download.start" = "Herunterladen";
 "download.checking.button" = "Wird geprüft…";
 "download.loading.button" = "Wird geladen…";
@@ -51,6 +46,9 @@
 "tip.autocopy" = "Übersetzung wird **automatisch kopiert**";
 "onboarding.finish" = "Los geht's!";
 
+// MARK: - HistoryView
+"history.empty" = "Kein Verlauf";
+
 // MARK: - Accessibility
 "a11y.sourcelang" = "Quellsprache: %@";
 "a11y.targetlang" = "Zielsprache: %@";
@@ -58,9 +56,6 @@
 "a11y.charcount" = "%ld Zeichen eingegeben";
 "a11y.translate.hint" = "Übersetzt den eingegebenen Text";
 "a11y.history.hint" = "Tippen um diesen Eintrag wiederzuverwenden";
-
-// MARK: - HistoryView
-"history.empty" = "Kein Verlauf";
 
 // MARK: - SettingsView
 "settings" = "Einstellungen";
@@ -73,9 +68,16 @@
 "settings.autopaste" = "Automatisch übersetzen beim Einfügen";
 "settings.autotyping" = "Automatisch übersetzen beim Tippen";
 "settings.copyclipboard" = "Übersetzung in Zwischenablage kopieren";
+"settings.languagepacks" = "Sprachpakete";
 "settings.history" = "Verlauf";
 "settings.history.entries" = "Einträge";
-"settings.history.count %lld" = "%lld von 10";
+"settings.history.count %lld" = "%lld von 50";
 "settings.history.clear" = "Verlauf löschen";
 "settings.reset" = "Auf Standard zurücksetzen";
 "settings.reset.shortcut" = "Shortcut zurücksetzen";
+
+// MARK: - Language Pack Status
+"pack.installed" = "Installiert";
+"pack.downloading" = "Wird geladen…";
+"pack.download" = "Laden";
+"pack.retry" = "Erneut";

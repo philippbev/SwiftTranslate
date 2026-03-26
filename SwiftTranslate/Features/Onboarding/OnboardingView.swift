@@ -40,25 +40,16 @@ struct OnboardingView: View {
             }
         }
         .frame(width: 340)
-        // Two separate translationTask modifiers — one per package direction.
-        // Using a single task with config-swap is unreliable when the languages
-        // are already installed (Apple may deduplicate identical-language configs).
+        // Single .translationTask that reacts to state.prepareConfig.
+        // AppState.triggerNextDownload() swaps prepareConfig to advance the queue.
         .translationTask(state.prepareConfig) { session in
             do {
                 try await session.prepareTranslation()
-                if case .downloading(phase: .enDe) = state.downloadStatus {
-                    state.enDeReady()
-                }
-            } catch {
-                state.downloadFailed(error)
-            }
-        }
-        .translationTask(state.prepareConfigDeEn) { session in
-            do {
-                try await session.prepareTranslation()
-                if case .downloading(phase: .deDe) = state.downloadStatus {
-                    state.finishDownload()
-                    withAnimation(.easeInOut(duration: 0.35)) { currentStep = .ready }
+                if case .downloading(let pair) = state.downloadStatus {
+                    state.pairReady(pair)
+                    if state.downloadStatus == .ready {
+                        withAnimation(.easeInOut(duration: 0.35)) { currentStep = .ready }
+                    }
                 }
             } catch {
                 state.downloadFailed(error)
@@ -125,7 +116,6 @@ private struct DownloadStepView: View {
     @Environment(AppState.self) private var state
     let onComplete: () -> Void
 
-    // Animated progress that runs while prepareTranslation() blocks
     @State private var animatedProgress: Double = 0
     @State private var progressTask: Task<Void, Never>? = nil
 
@@ -154,22 +144,7 @@ private struct DownloadStepView: View {
             }
             .padding(.horizontal, 24)
 
-            Divider().padding(.vertical, 18)
-
-            // Package rows
-            VStack(spacing: 8) {
-                PackageRow(
-                    flag: "🇬🇧",
-                    title: L("download.package.english"),
-                    status: enDeStatus
-                )
-                PackageRow(
-                    flag: "🇩🇪",
-                    title: L("download.package.german"),
-                    status: deEnStatus
-                )
-            }
-            .padding(.horizontal, 24)
+            Divider().padding(.vertical, 14)
 
             // Progress bar area
             VStack(spacing: 8) {
@@ -205,11 +180,10 @@ private struct DownloadStepView: View {
                         .multilineTextAlignment(.center)
                 }
             }
-            .frame(height: 52)
+            .frame(height: 44)
             .padding(.horizontal, 24)
-            .padding(.top, 12)
 
-            Divider().padding(.vertical, 18)
+            Divider().padding(.vertical, 14)
 
             // CTA
             VStack(spacing: 10) {
@@ -221,10 +195,12 @@ private struct DownloadStepView: View {
         }
         .onChange(of: state.downloadStatus) { _, new in
             switch new {
-            case .downloading(phase: .enDe):
-                startProgressAnimation(from: 0, to: 0.45, duration: 90)
-            case .downloading(phase: .deDe):
-                startProgressAnimation(from: 0.5, to: 0.95, duration: 90)
+            case .downloading:
+                let total = Double(max(state.downloadQueue.count, 1))
+                let done = Double(state.downloadQueueIndex)
+                let start = done / total
+                let end = (done + 1) / total * 0.95
+                startProgressAnimation(from: start, to: end, duration: 60)
             case .ready:
                 progressTask?.cancel()
                 animatedProgress = 1.0
@@ -254,32 +230,17 @@ private struct DownloadStepView: View {
     }
 
     private var progressLabel: String {
-        switch state.downloadStatus {
-        case .checkingAvailability:        return L("download.checking")
-        case .downloading(phase: .enDe):   return L("download.progress.english")
-        case .downloading(phase: .deDe):   return L("download.progress.german")
-        default:                           return ""
+        if case .downloading(let pair) = state.downloadStatus {
+            let src = SupportedLanguage.from(id: pair.source)?.displayName ?? pair.source
+            let tgt = SupportedLanguage.from(id: pair.target)?.displayName ?? pair.target
+            let idx = state.downloadQueueIndex + 1
+            let total = state.downloadQueue.count
+            return "\(src) → \(tgt)  (\(idx)/\(total))"
         }
-    }
-
-    private var enDeStatus: PackageRow.Status {
-        switch state.downloadStatus {
-        case .idle, .checkingAvailability:  return .waiting
-        case .downloading(phase: .enDe):    return .downloading
-        case .downloading(phase: .deDe),
-             .ready:                        return .done
-        case .failed:                       return .failed
+        if case .checkingAvailability = state.downloadStatus {
+            return L("download.checking")
         }
-    }
-
-    private var deEnStatus: PackageRow.Status {
-        switch state.downloadStatus {
-        case .idle, .checkingAvailability,
-             .downloading(phase: .enDe):    return .waiting
-        case .downloading(phase: .deDe):    return .downloading
-        case .ready:                        return .done
-        case .failed:                       return .failed
-        }
+        return ""
     }
 
     @ViewBuilder
@@ -327,8 +288,6 @@ private struct DownloadStepView: View {
 
     // MARK: - Animated progress
 
-    /// Smoothly animates progress from `from` to `to` over `duration` seconds.
-    /// Stops at `to` and waits for the real callback to push it further.
     private func startProgressAnimation(from start: Double, to end: Double, duration: Double) {
         progressTask?.cancel()
         animatedProgress = start

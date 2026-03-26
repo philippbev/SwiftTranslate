@@ -4,27 +4,125 @@ import Translation
 @available(macOS 15.0, *)
 struct MenuBarView: View {
     @Environment(AppState.self) private var state
-    @State private var sessionEnDe: TranslationSession? = nil
-    @State private var sessionDeDe: TranslationSession? = nil
+    /// Session pool: keyed by LangPair.key, e.g. "en>de"
+    @State private var sessionPool: [String: TranslationSession] = [:]
+    @State private var sessionPoolOrder: [String] = []
+    private let sessionPoolLimit = 8
 
     var body: some View {
         Group {
             if state.onboardingCompleted {
                 TranslatorView()
-                    // Session EN→DE
                     .translationTask(
                         source: Locale.Language(identifier: "en"),
                         target: Locale.Language(identifier: "de")
                     ) { @MainActor session in
-                        self.sessionEnDe = session
+                        cacheSession(session, key: "en>de")
                         try? await Task.sleep(for: .seconds(60 * 60 * 24))
                     }
-                    // Session DE→EN
                     .translationTask(
                         source: Locale.Language(identifier: "de"),
                         target: Locale.Language(identifier: "en")
                     ) { @MainActor session in
-                        self.sessionDeDe = session
+                        cacheSession(session, key: "de>en")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "en"),
+                        target: Locale.Language(identifier: "fr")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "en>fr")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "fr"),
+                        target: Locale.Language(identifier: "en")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "fr>en")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "en"),
+                        target: Locale.Language(identifier: "es")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "en>es")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "es"),
+                        target: Locale.Language(identifier: "en")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "es>en")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "en"),
+                        target: Locale.Language(identifier: "it")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "en>it")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "it"),
+                        target: Locale.Language(identifier: "en")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "it>en")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "en"),
+                        target: Locale.Language(identifier: "pt")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "en>pt")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "pt"),
+                        target: Locale.Language(identifier: "en")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "pt>en")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "en"),
+                        target: Locale.Language(identifier: "nl")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "en>nl")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "nl"),
+                        target: Locale.Language(identifier: "en")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "nl>en")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "en"),
+                        target: Locale.Language(identifier: "ja")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "en>ja")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "ja"),
+                        target: Locale.Language(identifier: "en")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "ja>en")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "en"),
+                        target: Locale.Language(identifier: "zh")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "en>zh")
+                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
+                    }
+                    .translationTask(
+                        source: Locale.Language(identifier: "zh"),
+                        target: Locale.Language(identifier: "en")
+                    ) { @MainActor session in
+                        cacheSession(session, key: "zh>en")
                         try? await Task.sleep(for: .seconds(60 * 60 * 24))
                     }
                     // Triggered on every new translation request
@@ -32,9 +130,8 @@ struct MenuBarView: View {
                         let text = state.pendingTranslationText
                         guard !text.isEmpty else { return }
                         let requestID = state.translationRequestID
-                        let sourceId = state.sourceLang.localeIdentifier
-                        let session = sourceId == "en" ? sessionEnDe : sessionDeDe
-                        guard let session else {
+                        let sessionKey = "\(state.sourceLang.id)>\(state.targetLang.id)"
+                        guard let session = sessionPool[sessionKey] else {
                             state.isTranslating = false
                             return
                         }
@@ -56,6 +153,19 @@ struct MenuBarView: View {
             }
         }
         .frame(width: 340)
+    }
+
+    @MainActor
+    private func cacheSession(_ session: TranslationSession, key: String) {
+        if sessionPool[key] == nil {
+            // Evict oldest if at limit
+            if sessionPoolOrder.count >= sessionPoolLimit, let oldest = sessionPoolOrder.first {
+                sessionPool.removeValue(forKey: oldest)
+                sessionPoolOrder.removeFirst()
+            }
+            sessionPool[key] = session
+            sessionPoolOrder.append(key)
+        }
     }
 }
 
@@ -113,21 +223,41 @@ private struct LanguageBar: View {
         @Bindable var state = state
 
         HStack(spacing: 6) {
-            // Source language
-            HStack(spacing: 4) {
-                let displaySource = state.detectedLang ?? state.sourceLang
-                Text("\(displaySource.flag) \(displaySource.displayName)")
-                    .font(.callout).fontWeight(.medium)
-                if state.detectedLang != nil && !state.isTranslating && !state.sourceLangLocked {
-                    Text(L("detected"))
+            // Source language picker
+            Menu {
+                let validSources = SupportedLanguage.all.filter { lang in
+                    !SupportedLanguage.validTargets(for: lang).isEmpty
+                }
+                ForEach(validSources) { lang in
+                    Button {
+                        state.sourceLang = lang
+                        state.sourceLangLocked = true
+                        state.manualLanguageSwap = true
+                    } label: {
+                        Label("\(lang.flag) \(lang.displayName)",
+                              systemImage: lang == state.sourceLang ? "checkmark" : "")
+                    }
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    let displaySource = state.detectedLang ?? state.sourceLang
+                    Text("\(displaySource.flag) \(displaySource.displayName)")
+                        .font(.callout).fontWeight(.medium)
+                    if state.detectedLang != nil && !state.isTranslating && !state.sourceLangLocked {
+                        Text(L("detected"))
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(.quaternary, in: Capsule())
+                    }
+                    Image(systemName: "chevron.down")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(.quaternary, in: Capsule())
                 }
             }
-            .accessibilityElement(children: .combine)
+            .menuStyle(.borderlessButton)
+            .fixedSize()
             .accessibilityLabel(String(format: L("a11y.sourcelang"), (state.detectedLang ?? state.sourceLang).displayName))
 
             Button {
@@ -153,12 +283,34 @@ private struct LanguageBar: View {
             .help(Text(L("swap.languages")))
             .accessibilityLabel(L("swap.languages"))
             .accessibilityHint(L("a11y.swap.hint"))
+            .disabled(!SupportedLanguage.supportedPairs.contains(
+                LangPair(state.targetLang.id, state.sourceLang.id)))
 
             Spacer()
 
-            Text("\(state.targetLang.flag) \(state.targetLang.displayName)")
-                .font(.callout).fontWeight(.medium)
-                .accessibilityLabel(String(format: L("a11y.targetlang"), state.targetLang.displayName))
+            // Target language picker
+            Menu {
+                let validTargets = SupportedLanguage.validTargets(for: state.sourceLang)
+                ForEach(validTargets) { lang in
+                    Button {
+                        state.targetLang = lang
+                    } label: {
+                        Label("\(lang.flag) \(lang.displayName)",
+                              systemImage: lang == state.targetLang ? "checkmark" : "")
+                    }
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    Text("\(state.targetLang.flag) \(state.targetLang.displayName)")
+                        .font(.callout).fontWeight(.medium)
+                    Image(systemName: "chevron.down")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .menuStyle(.borderlessButton)
+            .fixedSize()
+            .accessibilityLabel(String(format: L("a11y.targetlang"), state.targetLang.displayName))
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 9)
@@ -187,15 +339,16 @@ private struct InputOutputArea: View {
                         }
                     }
                 )
-                .frame(height: 108)
+                .frame(height: 120)
 
                 if !state.sourceText.isEmpty {
                     let count = state.sourceText.count
-                    Text(String(format: L("char.count %lld"), count))
+                    let limit = AppState.maxInputLength
+                    Text("\(count) / \(limit)")
                         .font(.caption2.monospacedDigit())
                         .foregroundStyle(
-                            count > 500 ? Color.red :
-                            count > 400 ? Color.orange :
+                            count > limit - 200 ? Color.red :
+                            count > limit - 1000 ? Color.orange :
                             Color.secondary.opacity(0.5)
                         )
                         .padding(.trailing, 10)
@@ -214,7 +367,7 @@ private struct InputOutputArea: View {
                     placeholder: L("output.placeholder"),
                     isEditable: false
                 )
-                .frame(height: 108)
+                .frame(height: 120)
                 .background(Color(nsColor: .windowBackgroundColor))
 
                 if state.isTranslating {

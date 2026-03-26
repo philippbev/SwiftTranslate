@@ -11,14 +11,20 @@ private let logger = Logger(subsystem: "com.philippbev.SwiftTranslate", category
 enum DownloadStatus: Equatable {
     case idle
     case checkingAvailability
-    case downloading(phase: DownloadPhase)
+    case downloading(pair: LangPair)
     case ready
     case failed(String)
+}
 
-    enum DownloadPhase: Equatable {
-        case enDe   // step 1
-        case deDe   // step 2 (DE→EN)
-    }
+// MARK: - Pack availability per pair
+
+@available(macOS 15.0, *)
+enum PackStatus: Equatable {
+    case unknown
+    case installed
+    case notInstalled
+    case downloading
+    case failed
 }
 
 // MARK: - AppState
@@ -33,16 +39,21 @@ final class AppState {
     var translatedText = ""
     var sourceLang: SupportedLanguage = {
         let stored = UserDefaults.standard.string(forKey: "sourceLang") ?? ""
-        guard let lang = SupportedLanguage.from(id: stored),
-              lang == .english || lang == .german else { return .english }
+        guard let lang = SupportedLanguage.from(id: stored) else { return .english }
         return lang
     }() {
-        didSet { UserDefaults.standard.set(sourceLang.id, forKey: "sourceLang") }
+        didSet {
+            UserDefaults.standard.set(sourceLang.id, forKey: "sourceLang")
+            // If current target is no longer valid for new source, auto-pick best target
+            if !SupportedLanguage.supportedPairs.contains(LangPair(sourceLang.id, targetLang.id)) {
+                targetLang = SupportedLanguage.validTargets(for: sourceLang).first ?? .german
+                targetLangManuallySet = false
+            }
+        }
     }
     var targetLang: SupportedLanguage = {
         let stored = UserDefaults.standard.string(forKey: "targetLang") ?? ""
-        guard let lang = SupportedLanguage.from(id: stored),
-              lang == .english || lang == .german else { return .german }
+        guard let lang = SupportedLanguage.from(id: stored) else { return .german }
         return lang
     }() {
         didSet {
@@ -70,7 +81,11 @@ final class AppState {
     // MARK: Download state
     var downloadStatus: DownloadStatus = .idle
     var prepareConfig: TranslationSession.Configuration? = nil
-    var prepareConfigDeEn: TranslationSession.Configuration? = nil
+    /// Per-pair pack status — populated by verifyLanguagePacks() and download flow
+    var packStatus: [LangPair: PackStatus] = [:]
+    /// Current download queue (pairs to download in order)
+    private(set) var downloadQueue: [LangPair] = []
+    private(set) var downloadQueueIndex: Int = 0
     /// 0.0 – 1.0, updated during download
     var downloadProgress: Double = 0
 
@@ -82,14 +97,13 @@ final class AppState {
     private static let retriggerDebounceMs: Int = 300
     private static let copiedHideSeconds: Double = 2
     private static let langEN = "en"
-    private static let langDE = "de"
 
     private var detectionDebounceTask: Task<Void, Never>?
     private var autoTranslateDebounceTask: Task<Void, Never>?
     private var activeTranslateTask: Task<Void, Never>?
     private var copiedHideTask: Task<Void, Never>?
     private var translationCache: [String: String] = [:]
-    private var translationCacheOrder: [String] = []   // tracks insertion order for LRU eviction
+    private var translationCacheOrder: [String] = []
     private let translationCacheLimit = 50
     static let maxInputLength = 5_000
 
@@ -126,49 +140,76 @@ final class AppState {
 
     // MARK: - Download
 
-    /// Checks availability first, then starts downloading missing packages.
+    /// Checks availability of all pairs, then downloads missing ones sequentially.
     func startDownload() async {
         downloadStatus = .checkingAvailability
         downloadProgress = 0
 
-        let (enStatus, deStatus) = await checkAvailability()
+        let allPairs = Array(SupportedLanguage.supportedPairs)
+        let availability = LanguageAvailability()
 
-        logger.debug("[Download] EN→DE status: \(String(describing: enStatus)), DE→EN status: \(String(describing: deStatus))")
+        var missing: [LangPair] = []
+        for pair in allPairs {
+            let status = await availability.status(
+                from: Locale.Language(identifier: pair.source),
+                to: Locale.Language(identifier: pair.target)
+            )
+            packStatus[pair] = status == .installed ? .installed : .notInstalled
+            if status != .installed { missing.append(pair) }
+        }
 
-        if enStatus == .installed && deStatus == .installed {
+        logger.debug("[Download] \(missing.count) pairs need downloading")
+
+        if missing.isEmpty {
             finishDownload()
             return
         }
 
-        downloadStatus = .downloading(phase: .enDe)
-        prepareConfig = TranslationSession.Configuration(
-            source: Locale.Language(identifier: AppState.langEN),
-            target: Locale.Language(identifier: AppState.langDE)
-        )
+        downloadQueue = missing
+        downloadQueueIndex = 0
+        triggerNextDownload()
     }
 
-    /// Called by OnboardingView after EN→DE package is ready.
-    func enDeReady() {
-        logger.debug("[Download] EN→DE ready, switching to DE→EN")
-        downloadProgress = 0.5
-        downloadStatus = .downloading(phase: .deDe)
-        prepareConfigDeEn = TranslationSession.Configuration(
-            source: Locale.Language(identifier: AppState.langDE),
-            target: Locale.Language(identifier: AppState.langEN)
-        )
+    /// Called by OnboardingView / SettingsView after the current pair's prepareTranslation() completes.
+    func pairReady(_ pair: LangPair) {
+        logger.debug("[Download] Pair \(pair.key) ready")
+        packStatus[pair] = .installed
+        downloadQueueIndex += 1
+        downloadProgress = downloadQueue.isEmpty ? 1.0 :
+            Double(downloadQueueIndex) / Double(downloadQueue.count)
+
+        if downloadQueueIndex >= downloadQueue.count {
+            finishDownload()
+        } else {
+            triggerNextDownload()
+        }
     }
 
     /// Called when all packages are ready.
     func finishDownload() {
         downloadProgress = 1.0
         downloadStatus = .ready
-        invalidateDownloadConfigs()
+        prepareConfig?.invalidate()
+        prepareConfig = nil
         onboardingCompleted = true
     }
 
     func downloadFailed(_ error: Error) {
         downloadStatus = .failed(error.localizedDescription)
-        invalidateDownloadConfigs()
+        prepareConfig?.invalidate()
+        prepareConfig = nil
+    }
+
+    private func triggerNextDownload() {
+        guard downloadQueueIndex < downloadQueue.count else { return }
+        let pair = downloadQueue[downloadQueueIndex]
+        packStatus[pair] = .downloading
+        downloadStatus = .downloading(pair: pair)
+        prepareConfig = TranslationSession.Configuration(
+            source: Locale.Language(identifier: pair.source),
+            target: Locale.Language(identifier: pair.target)
+        )
+        logger.debug("[Download] Triggering download for \(pair.key)")
     }
 
     // MARK: - Translation
@@ -176,12 +217,8 @@ final class AppState {
     func translate() {
         let text = sourceText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, text.count <= AppState.maxInputLength else { return }
-        // Block overlapping calls — a new request only starts once the current
-        // .translationTask session has fully resolved (isTranslating reset to false).
         guard !isTranslating else { return }
 
-        // Mark busy immediately so any further keystrokes / debounce firings are
-        // blocked above before we even hit the async suspension point.
         isTranslating = true
         errorMessage = nil
 
@@ -191,7 +228,15 @@ final class AppState {
             if !manualLanguageSwap && !sourceLangLocked {
                 if let detected = await detector.detect(text) {
                     guard !Task.isCancelled else { isTranslating = false; return }
-                    sourceLang = detected
+                    // Only apply detected lang if it's a supported source
+                    if SupportedLanguage.validTargets(for: detected).contains(targetLang) {
+                        sourceLang = detected
+                    } else if let firstValid = SupportedLanguage.validTargets(for: detected).first {
+                        sourceLang = detected
+                        if !targetLangManuallySet { targetLang = firstValid }
+                    } else {
+                        sourceLang = detected
+                    }
                     if !targetLangManuallySet && targetLang == detected {
                         targetLang = detected == .english ? .german : .english
                         targetLangManuallySet = false
@@ -203,7 +248,7 @@ final class AppState {
             detectedLang = nil
             manualLanguageSwap = false
 
-            // Cache hit — no network/framework call needed
+            // Cache hit
             let cacheKey = "\(sourceLang.id)>\(targetLang.id):\(text)"
             if let cached = translationCache[cacheKey] {
                 translatedText = cached
@@ -221,9 +266,6 @@ final class AppState {
                 return
             }
 
-            // Store text and bump UUID — .task(id: translationRequestID) in
-            // MenuBarView picks this up and runs the translation directly on
-            // the cached session, bypassing Apple's Configuration object caching.
             pendingTranslationText = text
             translationRequestID = UUID()
             translationConfig = nil
@@ -232,27 +274,26 @@ final class AppState {
 
     /// Called while user types — debounced 300ms for detection, 800ms for auto-translate.
     func updateDetectedLang() {
-        // Clear translation when source text is empty
         if sourceText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             translatedText = ""
             detectedLang = nil
             return
         }
 
-        // Language detection: skip if manually swapped or locked
         if !manualLanguageSwap && !sourceLangLocked {
             detectionDebounceTask?.cancel()
             detectionDebounceTask = Task {
                 try? await Task.sleep(for: .milliseconds(AppState.detectionDebounceMs))
                 guard !Task.isCancelled else { return }
-                detectedLang = await detector.detect(sourceText)
+                if let detected = await detector.detect(sourceText),
+                   !SupportedLanguage.validTargets(for: detected).isEmpty {
+                    detectedLang = detected
+                }
             }
         } else {
             detectedLang = nil
         }
 
-        // Auto-translate: always schedule the debounce; translate() itself
-        // blocks overlapping calls via isTranslating.
         guard autoTranslateWhileTyping,
               !sourceText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         autoTranslateDebounceTask?.cancel()
@@ -291,9 +332,6 @@ final class AppState {
         ))
         manualLanguageSwap = false
 
-        // If the user kept typing while we were translating, the debounce fired
-        // translate() but it was blocked by isTranslating. Now that we're free,
-        // re-trigger so the latest text gets translated.
         if autoTranslateWhileTyping {
             let latestText = sourceText.trimmingCharacters(in: .whitespacesAndNewlines)
             if !latestText.isEmpty && latestText != finishedText {
@@ -314,6 +352,8 @@ final class AppState {
 
     func swap() {
         guard !isTranslating else { return }
+        // Only swap if the reverse pair is also supported
+        guard SupportedLanguage.supportedPairs.contains(LangPair(targetLang.id, sourceLang.id)) else { return }
         Swift.swap(&sourceText, &translatedText)
         Swift.swap(&sourceLang, &targetLang)
         manualLanguageSwap = true
@@ -336,15 +376,6 @@ final class AppState {
 
     // MARK: - Private
 
-    private func checkAvailability() async -> (en: LanguageAvailability.Status, de: LanguageAvailability.Status) {
-        let availability = LanguageAvailability()
-        let enStatus = await availability.status(from: Locale.Language(identifier: AppState.langEN),
-                                                  to: Locale.Language(identifier: AppState.langDE))
-        let deStatus = await availability.status(from: Locale.Language(identifier: AppState.langDE),
-                                                  to: Locale.Language(identifier: AppState.langEN))
-        return (en: enStatus, de: deStatus)
-    }
-
     private func writeToClipboard(_ text: String) {
         guard !text.isEmpty, text.count <= AppState.maxInputLength else { return }
         NSPasteboard.general.clearContents()
@@ -355,16 +386,25 @@ final class AppState {
         return L("error.translation.failed")
     }
 
-    private func invalidateDownloadConfigs() {
-        prepareConfig?.invalidate()
-        prepareConfigDeEn?.invalidate()
-    }
-
     // MARK: - Language Pack Verification
+
     func verifyLanguagePacks() async {
-        let (enStatus, deStatus) = await checkAvailability()
-        if enStatus != .installed && deStatus != .installed {
+        let availability = LanguageAvailability()
+        var anyMissing = false
+        for pair in SupportedLanguage.supportedPairs {
+            let status = await availability.status(
+                from: Locale.Language(identifier: pair.source),
+                to: Locale.Language(identifier: pair.target)
+            )
+            packStatus[pair] = status == .installed ? .installed : .notInstalled
+            if status != .installed { anyMissing = true }
+        }
+        // Only trigger re-onboarding if the core EN↔DE pair is missing
+        let coreInstalled = packStatus[LangPair("en", "de")] == .installed &&
+                            packStatus[LangPair("de", "en")] == .installed
+        if !coreInstalled {
             onboardingCompleted = false
         }
+        _ = anyMissing
     }
 }

@@ -18,14 +18,13 @@
 "error.title" = "Error";
 "error.translation.failed" = "Translation failed. Please try again.";
 "ok" = "OK";
-"char.count %lld" = "%lld / 500";
 
 // MARK: - OnboardingView
-"onboarding.welcome.subtitle" = "Fast EN ↔ DE translation\ndirectly from the menu bar.";
+"onboarding.welcome.subtitle" = "Fast offline translation\ndirectly from the menu bar.";
 "feature.offline.title" = "Offline Translation";
 "feature.offline.subtitle" = "No account, no internet required.";
 "feature.autodetect.title" = "Auto Language Detection";
-"feature.autodetect.subtitle" = "EN and DE are detected automatically.";
+"feature.autodetect.subtitle" = "Source language detected automatically.";
 "feature.autocopy.title" = "Auto-Copy";
 "feature.autocopy.subtitle" = "Translation copied to clipboard instantly.";
 "feature.hotkey.title" = "Global Hotkey ⌥⇧T";
@@ -33,13 +32,9 @@
 "onboarding.continue" = "Continue";
 "download.title" = "Download Language Packs";
 "download.subtitle" = "Required once for offline translation.";
-"download.package.english" = "English Language Pack";
-"download.package.german" = "German Language Pack";
 "download.failed" = "Download failed";
 "download.size.hint" = "approx. 150–300 MB per pack · first launch only";
 "download.checking" = "Checking availability…";
-"download.progress.english" = "Loading English pack…";
-"download.progress.german" = "Loading German pack…";
 "download.start" = "Download";
 "download.checking.button" = "Checking…";
 "download.loading.button" = "Loading…";
@@ -73,9 +68,16 @@
 "settings.autopaste" = "Auto-translate on paste";
 "settings.autotyping" = "Auto-translate while typing";
 "settings.copyclipboard" = "Copy translation to clipboard";
+"settings.languagepacks" = "Language Packs";
 "settings.history" = "History";
 "settings.history.entries" = "Entries";
-"settings.history.count %lld" = "%lld of 10";
+"settings.history.count %lld" = "%lld of 50";
 "settings.history.clear" = "Clear History";
 "settings.reset" = "Reset to Defaults";
 "settings.reset.shortcut" = "Reset Shortcut";
+
+// MARK: - Language Pack Status
+"pack.installed" = "Installed";
+"pack.downloading" = "Downloading…";
+"pack.download" = "Download";
+"pack.retry" = "Retry";
