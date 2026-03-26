@@ -1,0 +1,10 @@
+.build/
+.swiftpm/
+*.xcodeproj/
+*.xcworkspace/
+DerivedData/
+*.moved-aside
+*.playground/playground.xcworkspace
+xcuserdata/
+.DS_Store
+.claude/

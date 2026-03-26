@@ -1,0 +1,70 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-15
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app/Contents/Developer
+
+      - name: Build universal binary
+        run: swift build -c release --arch arm64 --arch x86_64
+
+      - name: Bundle .app
+        run: bash .github/scripts/bundle-app.sh
+
+      - name: Ad-hoc codesign with entitlements
+        run: |
+          codesign --deep --force --sign - \
+            --entitlements SwiftTranslate/Support/SwiftTranslate.entitlements \
+            SwiftTranslate.app
+
+      - name: Verify app bundle
+        run: |
+          echo "=== Bundle structure ==="
+          find SwiftTranslate.app -maxdepth 4
+          echo "=== Entitlements ==="
+          codesign -d --entitlements - SwiftTranslate.app 2>&1 || true
+
+      - name: Create DMG
+        run: |
+          mkdir dmg_staging
+          cp -R SwiftTranslate.app dmg_staging/
+          ln -s /Applications dmg_staging/Applications
+          hdiutil create \
+            -volname "SwiftTranslate" \
+            -srcfolder dmg_staging \
+            -ov -format UDZO \
+            SwiftTranslate.dmg
+
+      - name: Delete old latest release
+        run: gh release delete latest --yes 2>/dev/null || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create release
+        run: |
+          gh release create "latest" SwiftTranslate.dmg \
+            --title "Latest Build" \
+            --latest \
+            --notes "## SwiftTranslate
+
+          ### Installation
+          1. Download the \`.dmg\` below.
+          2. Open it and drag **SwiftTranslate.app** to your Applications folder.
+          3. On first launch, right-click → **Open** to bypass Gatekeeper (unsigned build).
+
+          ### Requirements
+          macOS 15 Sequoia or later · Apple Silicon & Intel"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

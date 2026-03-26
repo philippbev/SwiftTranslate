@@ -1,0 +1,81 @@
+// MARK: - MenuBarView
+"detected" = "erkannt";
+"lang.lock.off" = "Sprache fixieren";
+"lang.lock.on" = "Sprachfixierung aufheben";
+"quit" = "SwiftTranslate beenden";
+"swap.languages" = "Sprachen tauschen";
+"window.title" = "SwiftTranslate";
+"window.open" = "Fenster öffnen…";
+"input.placeholder" = "Text eingeben…";
+"output.placeholder" = "Übersetzung…";
+"close" = "Schließen";
+"history" = "Verlauf";
+"copied" = "Kopiert";
+"clear" = "Leeren";
+"translate" = "Übersetzen";
+"history.entries %lld" = "%lld Einträge";
+"history.clear.all" = "Alle löschen";
+"error.title" = "Fehler";
+"error.translation.failed" = "Übersetzung fehlgeschlagen. Bitte erneut versuchen.";
+"ok" = "OK";
+"char.count %lld" = "%lld / 500";
+
+// MARK: - OnboardingView
+"onboarding.welcome.subtitle" = "Schnelle EN ↔ DE Übersetzung\ndirekt aus der Menüleiste.";
+"feature.offline.title" = "Offline-Übersetzung";
+"feature.offline.subtitle" = "Kein Account, kein Internet nötig.";
+"feature.autodetect.title" = "Auto-Spracherkennung";
+"feature.autodetect.subtitle" = "EN und DE werden automatisch erkannt.";
+"feature.autocopy.title" = "Auto-Copy";
+"feature.autocopy.subtitle" = "Übersetzung direkt in die Zwischenablage.";
+"feature.hotkey.title" = "Globaler Hotkey ⌥⇧T";
+"feature.hotkey.subtitle" = "Öffnet die App von überall.";
+"onboarding.continue" = "Weiter";
+"download.title" = "Sprachpakete laden";
+"download.subtitle" = "Einmalig erforderlich für Offline-Übersetzung.";
+"download.package.english" = "Englisches Sprachpaket";
+"download.package.german" = "Deutsches Sprachpaket";
+"download.failed" = "Download fehlgeschlagen";
+"download.size.hint" = "ca. 150–300 MB je Paket · nur beim ersten Start";
+"download.checking" = "Verfügbarkeit wird geprüft…";
+"download.progress.english" = "Englisches Paket wird geladen…";
+"download.progress.german" = "Deutsches Paket wird geladen…";
+"download.start" = "Herunterladen";
+"download.checking.button" = "Wird geprüft…";
+"download.loading.button" = "Wird geladen…";
+"download.retry" = "Erneut versuchen";
+"ready.title" = "Bereit!";
+"ready.subtitle" = "Alle Pakete sind installiert.\nDu kannst sofort loslegen.";
+"tip.hotkey" = "**⌥⇧T** — App von überall öffnen";
+"tip.translate" = "**⌘↵** — Text übersetzen";
+"tip.autocopy" = "Übersetzung wird **automatisch kopiert**";
+"onboarding.finish" = "Los geht's!";
+
+// MARK: - Accessibility
+"a11y.sourcelang" = "Quellsprache: %@";
+"a11y.targetlang" = "Zielsprache: %@";
+"a11y.swap.hint" = "Tauscht Quell- und Zielsprache";
+"a11y.charcount" = "%ld Zeichen eingegeben";
+"a11y.translate.hint" = "Übersetzt den eingegebenen Text";
+"a11y.history.hint" = "Tippen um diesen Eintrag wiederzuverwenden";
+
+// MARK: - HistoryView
+"history.empty" = "Kein Verlauf";
+
+// MARK: - SettingsView
+"settings" = "Einstellungen";
+"settings.shortcuts" = "Tastenkürzel";
+"settings.shortcut.open" = "Translator öffnen";
+"settings.languages" = "Sprachen";
+"settings.sourcelang" = "Quellsprache";
+"settings.targetlang" = "Zielsprache";
+"settings.behavior" = "Verhalten";
+"settings.autopaste" = "Automatisch übersetzen beim Einfügen";
+"settings.autotyping" = "Automatisch übersetzen beim Tippen";
+"settings.copyclipboard" = "Übersetzung in Zwischenablage kopieren";
+"settings.history" = "Verlauf";
+"settings.history.entries" = "Einträge";
+"settings.history.count %lld" = "%lld von 10";
+"settings.history.clear" = "Verlauf löschen";
+"settings.reset" = "Auf Standard zurücksetzen";
+"settings.reset.shortcut" = "Shortcut zurücksetzen";
