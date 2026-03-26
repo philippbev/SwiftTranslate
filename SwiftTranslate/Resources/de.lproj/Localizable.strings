@@ -78,7 +78,9 @@
 "settings.reset.shortcut" = "Shortcut zurücksetzen";
 
 // MARK: - Language Pack Status
-"pack.installed" = "Installiert";
+"settings.credits" = "Credits";
+"settings.credits.author" = "Entwickler";
+"settings.credits.version" = "Version";
 "pack.downloading" = "Wird geladen…";
 "pack.download" = "Laden";
 "pack.retry" = "Erneut";

@@ -79,11 +79,13 @@ struct SettingsView: View {
             }
 
             let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
-            Section {
-                Text("SwiftTranslate v\(version)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
+            Section(L("settings.credits")) {
+                LabeledContent(L("settings.credits.author")) {
+                    Text("Philipp Bevier").foregroundStyle(.secondary)
+                }
+                LabeledContent(L("settings.credits.version")) {
+                    Text("v\(version)").foregroundStyle(.secondary)
+                }
             }
         }
         .formStyle(.grouped)
