@@ -4,157 +4,19 @@ import Translation
 @available(macOS 15.0, *)
 struct MenuBarView: View {
     @Environment(AppState.self) private var state
-    /// Session pool: keyed by LangPair.key, e.g. "en>de"
-    @State private var sessionPool: [String: TranslationSession] = [:]
-    @State private var sessionPoolOrder: [String] = []
-    private let sessionPoolLimit = 8
 
     var body: some View {
         Group {
             if state.onboardingCompleted {
                 TranslatorView()
-                    .translationTask(
-                        source: Locale.Language(identifier: "en"),
-                        target: Locale.Language(identifier: "de")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "en>de")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "de"),
-                        target: Locale.Language(identifier: "en")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "de>en")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "en"),
-                        target: Locale.Language(identifier: "fr")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "en>fr")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "fr"),
-                        target: Locale.Language(identifier: "en")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "fr>en")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "en"),
-                        target: Locale.Language(identifier: "es")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "en>es")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "es"),
-                        target: Locale.Language(identifier: "en")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "es>en")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "en"),
-                        target: Locale.Language(identifier: "it")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "en>it")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "it"),
-                        target: Locale.Language(identifier: "en")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "it>en")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "en"),
-                        target: Locale.Language(identifier: "pt")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "en>pt")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "pt"),
-                        target: Locale.Language(identifier: "en")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "pt>en")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "en"),
-                        target: Locale.Language(identifier: "nl")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "en>nl")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "nl"),
-                        target: Locale.Language(identifier: "en")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "nl>en")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "en"),
-                        target: Locale.Language(identifier: "ja")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "en>ja")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "ja"),
-                        target: Locale.Language(identifier: "en")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "ja>en")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "en"),
-                        target: Locale.Language(identifier: "zh")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "en>zh")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    .translationTask(
-                        source: Locale.Language(identifier: "zh"),
-                        target: Locale.Language(identifier: "en")
-                    ) { @MainActor session in
-                        cacheSession(session, key: "zh>en")
-                        try? await Task.sleep(for: .seconds(60 * 60 * 24))
-                    }
-                    // Triggered on every new translation request
-                    .task(id: state.translationRequestID) { @MainActor in
-                        let text = state.pendingTranslationText
-                        guard !text.isEmpty else { return }
-                        let requestID = state.translationRequestID
-                        let sessionKey = "\(state.sourceLang.id)>\(state.targetLang.id)"
-
-                        // Wait up to 3 seconds for the session to appear (covers startup race)
-                        var session: TranslationSession? = sessionPool[sessionKey]
-                        if session == nil {
-                            for _ in 0..<30 {
-                                try? await Task.sleep(for: .milliseconds(100))
-                                guard !Task.isCancelled else { state.isTranslating = false; return }
-                                if let s = sessionPool[sessionKey] { session = s; break }
-                            }
-                        }
-
-                        guard let session else {
-                            state.translationDidFailWithPackMissing()
-                            return
-                        }
-                        guard state.translationRequestID == requestID else {
-                            state.isTranslating = false; return
-                        }
+                    // Single active session, driven by state.activeSessionConfig.
+                    // AppState swaps the config on language change; the framework
+                    // reuses the cached session for already-installed pairs.
+                    .translationTask(state.activeSessionConfig) { @MainActor session in
                         do {
+                            let text = state.pendingTranslationText
+                            guard !text.isEmpty else { return }
                             let r = try await session.translate(text)
-                            guard state.translationRequestID == requestID else {
-                                state.isTranslating = false
-                                return
-                            }
                             state.translationDidFinish(r.targetText)
                         } catch is CancellationError {
                             state.isTranslating = false
@@ -167,19 +29,6 @@ struct MenuBarView: View {
             }
         }
         .frame(width: 340)
-    }
-
-    @MainActor
-    private func cacheSession(_ session: TranslationSession, key: String) {
-        if sessionPool[key] == nil {
-            // Evict oldest if at limit
-            if sessionPoolOrder.count >= sessionPoolLimit, let oldest = sessionPoolOrder.first {
-                sessionPool.removeValue(forKey: oldest)
-                sessionPoolOrder.removeFirst()
-            }
-            sessionPool[key] = session
-            sessionPoolOrder.append(key)
-        }
     }
 }
 
