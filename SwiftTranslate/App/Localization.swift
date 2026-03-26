@@ -8,4 +8,4 @@ func L(_ key: String) -> String {
 
 /// App version — single source of truth.
 /// Bundle.main.infoDictionary is unavailable in SPM debug builds.
-let appVersion = "1.0.0"
+let appVersion = "1.1.0"
