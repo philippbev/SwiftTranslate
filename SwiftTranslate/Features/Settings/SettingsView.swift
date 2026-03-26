@@ -89,7 +89,7 @@ struct SettingsView: View {
         .frame(width: 420, height: 580)
         .onAppear {
             NSApp.activate(ignoringOtherApps: true)
-            Task { await state.verifyLanguagePacks() }
+            Task { await state.refreshAllPackStatus() }
         }
     }
 }

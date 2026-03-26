@@ -159,18 +159,19 @@ final class AppState {
         )
     }
 
+    /// Core pairs downloaded during onboarding — EN↔DE only.
+    static let corePairs: [LangPair] = [LangPair("en", "de"), LangPair("de", "en")]
+
     // MARK: - Download
 
-    /// Checks availability of all pairs, then downloads missing ones sequentially.
+    /// Onboarding download: checks and downloads EN↔DE only.
     func startDownload() async {
         downloadStatus = .checkingAvailability
         downloadProgress = 0
 
-        let allPairs = Array(SupportedLanguage.supportedPairs)
         let availability = LanguageAvailability()
-
         var missing: [LangPair] = []
-        for pair in allPairs {
+        for pair in AppState.corePairs {
             let status = await availability.status(
                 from: Locale.Language(identifier: pair.source),
                 to: Locale.Language(identifier: pair.target)
@@ -179,7 +180,7 @@ final class AppState {
             if status != .installed { missing.append(pair) }
         }
 
-        logger.debug("[Download] \(missing.count) pairs need downloading")
+        logger.debug("[Download] \(missing.count) core pairs need downloading")
 
         if missing.isEmpty {
             finishDownload()
@@ -379,12 +380,19 @@ final class AppState {
 
     func swap() {
         guard !isTranslating else { return }
-        // Only swap if the reverse pair is also supported
         guard SupportedLanguage.supportedPairs.contains(LangPair(targetLang.id, sourceLang.id)) else { return }
+        // Capture both values first to avoid didSet side-effects during the swap
+        let newSource = targetLang
+        let newTarget = sourceLang
         Swift.swap(&sourceText, &translatedText)
-        Swift.swap(&sourceLang, &targetLang)
         manualLanguageSwap = true
         targetLangManuallySet = false
+        // Set both atomically: assign target first (no pair-validation side effect),
+        // then source (didSet checks pair validity but newTarget is already correct)
+        targetLang = newTarget
+        targetLangManuallySet = false   // reset flag set by targetLang.didSet
+        sourceLang = newSource
+        manualLanguageSwap = true       // keep flag set correctly after sourceLang.didSet
     }
 
     func clear() {
@@ -415,23 +423,33 @@ final class AppState {
 
     // MARK: - Language Pack Verification
 
+    /// Called on app launch — checks core pairs only (EN↔DE).
+    /// Re-triggers onboarding if core packs are missing.
     func verifyLanguagePacks() async {
         let availability = LanguageAvailability()
-        var anyMissing = false
+        for pair in AppState.corePairs {
+            let status = await availability.status(
+                from: Locale.Language(identifier: pair.source),
+                to: Locale.Language(identifier: pair.target)
+            )
+            packStatus[pair] = status == .installed ? .installed : .notInstalled
+        }
+        let coreInstalled = packStatus[LangPair("en", "de")] == .installed &&
+                            packStatus[LangPair("de", "en")] == .installed
+        if !coreInstalled {
+            onboardingCompleted = false
+        }
+    }
+
+    /// Called from Settings to refresh status of all language pairs.
+    func refreshAllPackStatus() async {
+        let availability = LanguageAvailability()
         for pair in SupportedLanguage.supportedPairs {
             let status = await availability.status(
                 from: Locale.Language(identifier: pair.source),
                 to: Locale.Language(identifier: pair.target)
             )
             packStatus[pair] = status == .installed ? .installed : .notInstalled
-            if status != .installed { anyMissing = true }
         }
-        // Only trigger re-onboarding if the core EN↔DE pair is missing
-        let coreInstalled = packStatus[LangPair("en", "de")] == .installed &&
-                            packStatus[LangPair("de", "en")] == .installed
-        if !coreInstalled {
-            onboardingCompleted = false
-        }
-        _ = anyMissing
     }
 }
