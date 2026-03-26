@@ -1,0 +1,87 @@
+// MARK: - MenuBarView
+"detected" = "detected";
+"lang.lock.off" = "Lock source language";
+"lang.lock.on" = "Unlock source language";
+"quit" = "Quit SwiftTranslate";
+"swap.languages" = "Swap languages";
+"window.title" = "SwiftTranslate";
+"window.open" = "Open Window…";
+"input.placeholder" = "Enter text…";
+"output.placeholder" = "Translation…";
+"close" = "Close";
+"history" = "History";
+"copied" = "Copied";
+"clear" = "Clear";
+"translate" = "Translate";
+"history.entries %lld" = "%lld entries";
+"history.clear.all" = "Clear all";
+"error.title" = "Error";
+"error.translation.failed" = "Translation failed. Please try again.";
+"error.pack.missing" = "Language pack not installed. Download it in Settings → Language Packs.";
+"ok" = "OK";
+
+// MARK: - OnboardingView
+"onboarding.welcome.subtitle" = "Fast offline translation\ndirectly from the menu bar.";
+"feature.offline.title" = "Offline Translation";
+"feature.offline.subtitle" = "No account, no internet required.";
+"feature.autodetect.title" = "Auto Language Detection";
+"feature.autodetect.subtitle" = "Source language detected automatically.";
+"feature.autocopy.title" = "Auto-Copy";
+"feature.autocopy.subtitle" = "Translation copied to clipboard instantly.";
+"feature.hotkey.title" = "Global Hotkey ⌥⇧T";
+"feature.hotkey.subtitle" = "Open the app from anywhere.";
+"onboarding.continue" = "Continue";
+"download.title" = "Download Language Packs";
+"download.subtitle" = "Required once for offline translation.";
+"download.failed" = "Download failed";
+"download.size.hint" = "approx. 150–300 MB per pack · first launch only";
+"download.checking" = "Checking availability…";
+"download.start" = "Download";
+"download.checking.button" = "Checking…";
+"download.loading.button" = "Loading…";
+"download.retry" = "Try again";
+"ready.title" = "Ready!";
+"ready.subtitle" = "All packs are installed.\nYou can start right away.";
+"tip.hotkey" = "**⌥⇧T** — Open app from anywhere";
+"tip.translate" = "**⌘↵** — Translate text";
+"tip.autocopy" = "Translation is **copied automatically**";
+"onboarding.finish" = "Let's go!";
+
+// MARK: - HistoryView
+"history.empty" = "No History";
+
+// MARK: - Accessibility
+"a11y.sourcelang" = "Source language: %@";
+"a11y.targetlang" = "Target language: %@";
+"a11y.swap.hint" = "Swaps source and target language";
+"a11y.charcount" = "%ld characters entered";
+"a11y.translate.hint" = "Translates the entered text";
+"a11y.history.hint" = "Tap to reuse this entry";
+
+// MARK: - SettingsView
+"settings" = "Settings";
+"settings.shortcuts" = "Keyboard Shortcuts";
+"settings.shortcut.open" = "Open Translator";
+"settings.languages" = "Languages";
+"settings.sourcelang" = "Source Language";
+"settings.targetlang" = "Target Language";
+"settings.behavior" = "Behaviour";
+"settings.autopaste" = "Auto-translate on paste";
+"settings.autotyping" = "Auto-translate while typing";
+"settings.copyclipboard" = "Copy translation to clipboard";
+"settings.launchatlogin" = "Launch at Login";
+"settings.languagepacks" = "Language Packs";
+"settings.history" = "History";
+"settings.history.entries" = "Entries";
+"settings.history.count %lld" = "%lld of 50";
+"settings.history.clear" = "Clear History";
+"settings.reset" = "Reset to Defaults";
+"settings.reset.shortcut" = "Reset Shortcut";
+
+// MARK: - Language Pack Status
+"settings.credits" = "Credits";
+"settings.credits.author" = "Developer";
+"settings.credits.version" = "Version";
+"pack.downloading" = "Downloading…";
+"pack.download" = "Download";
+"pack.retry" = "Retry";
