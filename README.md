@@ -1,7 +1,7 @@
 # SwiftTranslate
 
 
-A native macOS menu bar app for fast, offline translation. Powered by Apple's on-device Translation framework — no account, no internet, no tracking.
+As a non-native English speaker, in your Corporate-live, you sometimes just need to quickly translate a word or phrase without opening a browser. SwiftTranslate lives in your menu bar, responds to a hotkey, and translates entirely on-device. No account, no internet, no AI.
 
 ---
 
@@ -18,6 +18,11 @@ A native macOS menu bar app for fast, offline translation. Powered by Apple's on
 - Launch at Login support
 - Right-click the menu bar icon for Settings and Quit
 - Liquid Glass UI — designed for macOS 26
+
+## Screenshots
+
+<img src="screenshots/translate.png" width="400" alt="Translator window" />
+<img src="screenshots/settings.png" width="400" alt="Settings window" />
 
 ## Requirements
 
